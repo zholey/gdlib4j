@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- 分页标签用到的文字 -->
+	<entry key="SimpleTurnPager.firstPage">First</entry>
+	<entry key="SimpleTurnPager.prevPage">Previous</entry>
+	<entry key="SimpleTurnPager.nextPage">Next</entry>
+	<entry key="SimpleTurnPager.lastPage">Last</entry>
+	<entry key="SimpleTurnPager.total">Total</entry>
+	<entry key="SimpleTurnPager.record">records</entry>
+	<entry key="SimpleTurnPager.page"></entry>
+</properties>
