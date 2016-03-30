@@ -5,6 +5,8 @@
  */
 package org.gridsofts.guif;
 
+import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -95,6 +97,20 @@ public class Menubar extends JMenuBar {
 		public Action(Type type, Object action) {
 			this.type = type;
 			this.action = action;
+			
+			// check parameters
+			
+			if (Type.COMMAND == type && !Runnable.class.isAssignableFrom(action.getClass())) {
+				throw new IllegalArgumentException("if type == Type.COMMAND, then action is a Runnable");
+			}
+			
+			if (Type.WORKBENCH == type && !Component.class.isAssignableFrom(action.getClass())) {
+				throw new IllegalArgumentException("if type == Type.WORKBENCH, then action is a Component");
+			}
+			
+			if (Type.DIALOG == type && !Dialog.class.isAssignableFrom(action.getClass())) {
+				throw new IllegalArgumentException("if type == Type.DIALOG, then action is a Dialog");
+			}
 		}
 
 		/**
