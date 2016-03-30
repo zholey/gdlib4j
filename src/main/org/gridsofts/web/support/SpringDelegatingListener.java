@@ -9,7 +9,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -61,10 +60,6 @@ public class SpringDelegatingListener implements ServletContextListener {
 		Object targetBeanObj = webApplicationContext.getBean(targetBeanName);
 		if (targetBeanObj != null && ServletContextListener.class.isAssignableFrom(targetBeanObj.getClass())) {
 			targetListener = (ServletContextListener) targetBeanObj;
-//
-//			if (ApplicationContextAware.class.isAssignableFrom(targetListener.getClass())) {
-//				((ApplicationContextAware) targetListener).setApplicationContext(webApplicationContext);
-//			}
 		}
 	}
 
