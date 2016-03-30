@@ -21,7 +21,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.gridsofts.rest.api.annotation.ApiMethod;
 import org.gridsofts.util.Encrypt;
-import org.gridsofts.web.util.WebContext;
+import org.gridsofts.web.support.WebContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
