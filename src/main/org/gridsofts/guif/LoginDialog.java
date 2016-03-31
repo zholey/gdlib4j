@@ -15,7 +15,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -55,8 +54,9 @@ public class LoginDialog extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// banner image
-		Icon bannerIcon = new ImageIcon(Resources.Image.get("banner.png"));
-		getContentPane().add(new JLabel(bannerIcon), BorderLayout.NORTH);
+		JLabel bannerIcon = new JLabel(new ImageIcon(Resources.Image.get("banner.png")));
+		bannerIcon.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+		getContentPane().add(bannerIcon, BorderLayout.NORTH);
 
 		//
 		userId = new JTextField();
@@ -65,12 +65,12 @@ public class LoginDialog extends JFrame {
 
 		JForm form = new JForm(7, 10);
 		form.setAutoCreateContainerGaps(true);
-		form.setBorder(BorderFactory.createEmptyBorder(20, 50, 30, 50));
+		form.setBorder(BorderFactory.createEmptyBorder(30, 50, 20, 50));
 		form.addFormItem("用户名", userId);
 		form.addFormItem("密码", passWd);
 
 		JPanel formControlbar = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		formControlbar.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 5));
+		formControlbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		form.addControlbar(formControlbar).add(btnOk);
 
 		getContentPane().add(form, BorderLayout.CENTER);
