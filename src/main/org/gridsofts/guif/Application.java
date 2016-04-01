@@ -188,7 +188,7 @@ public class Application extends JFrame implements IMenuListener {
 	 * 
 	 * @param tabbedComp
 	 */
-	private void _appendToWorkbench(JComponent tabbedComp) {
+	protected void appendToWorkbench(JComponent tabbedComp) {
 
 		int tabIndex = workbenchPane.indexOfComponent(tabbedComp);
 		if (tabIndex < 0) {
@@ -205,7 +205,7 @@ public class Application extends JFrame implements IMenuListener {
 	 * 
 	 * @param dialogContentComp
 	 */
-	private void _showModalDialog(JComponent dialogContentComp) {
+	protected void popupModalDialog(JComponent dialogContentComp) {
 		JDialog dialog = new JDialog(_instance, dialogContentComp.getName(), true);
 		dialog.add(dialogContentComp);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -221,6 +221,7 @@ public class Application extends JFrame implements IMenuListener {
 	 * event.EventObject)
 	 */
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void menuItemClicked(EventObject<Menubar.Action> event) {
 		Object actionObj = event.getPayload().getAction();
 
@@ -229,18 +230,39 @@ public class Application extends JFrame implements IMenuListener {
 
 			if (actionObj != null && Runnable.class.isAssignableFrom(actionObj.getClass())) {
 				_asyncService.execute((Runnable) actionObj);
+			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
+				
+				try {
+					_asyncService.execute((Runnable) ((Class) actionObj).newInstance());
+				} catch (InstantiationException e) {
+				} catch (IllegalAccessException e) {
+				}
 			}
 			break;
 		case WORKBENCH:
 
 			if (actionObj != null && JComponent.class.isAssignableFrom(actionObj.getClass())) {
-				_appendToWorkbench((JComponent) actionObj);
+				appendToWorkbench((JComponent) actionObj);
+			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
+				
+				try {
+					appendToWorkbench((JComponent) ((Class) actionObj).newInstance());
+				} catch (InstantiationException e) {
+				} catch (IllegalAccessException e) {
+				}
 			}
 			break;
 		case DIALOG:
 
 			if (actionObj != null && JComponent.class.isAssignableFrom(actionObj.getClass())) {
-				_showModalDialog((JComponent) actionObj);
+				popupModalDialog((JComponent) actionObj);
+			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
+				
+				try {
+					popupModalDialog((JComponent) ((Class) actionObj).newInstance());
+				} catch (InstantiationException e) {
+				} catch (IllegalAccessException e) {
+				}
 			}
 		}
 	}

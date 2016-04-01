@@ -97,19 +97,22 @@ public class Menubar extends JMenuBar {
 		public Action(Type type, Object action) {
 			this.type = type;
 			this.action = action;
-			
+
 			// check parameters
-			
-			if (Type.COMMAND == type && !Runnable.class.isAssignableFrom(action.getClass())) {
-				throw new IllegalArgumentException("if type == Type.COMMAND, then action is a Runnable");
+
+			if (Type.COMMAND == type && !Runnable.class.isAssignableFrom(action.getClass())
+					&& !Class.class.isAssignableFrom(action.getClass())) {
+				throw new IllegalArgumentException("if type == Type.COMMAND, then action should be a Runnable");
 			}
-			
-			if (Type.WORKBENCH == type && !Component.class.isAssignableFrom(action.getClass())) {
-				throw new IllegalArgumentException("if type == Type.WORKBENCH, then action is a Component");
+
+			if (Type.WORKBENCH == type && !Component.class.isAssignableFrom(action.getClass())
+					&& !Class.class.isAssignableFrom(action.getClass())) {
+				throw new IllegalArgumentException("if type == Type.WORKBENCH, then action should be a Component");
 			}
-			
-			if (Type.DIALOG == type && !Dialog.class.isAssignableFrom(action.getClass())) {
-				throw new IllegalArgumentException("if type == Type.DIALOG, then action is a Dialog");
+
+			if (Type.DIALOG == type && !Dialog.class.isAssignableFrom(action.getClass())
+					&& !Class.class.isAssignableFrom(action.getClass())) {
+				throw new IllegalArgumentException("if type == Type.DIALOG, then action should be a Dialog");
 			}
 		}
 

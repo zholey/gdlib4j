@@ -32,13 +32,12 @@ import org.gridsofts.guif.tree.DiscoveryNode;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.border.ScatterLineBorder;
 import org.gridsofts.swing.tree.CheckableTreeCellRenderer;
-import org.gridsofts.swing.tree.CheckableTreeNode;
 import org.gridsofts.swing.tree.JCheckableTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 发现之树
+ * 方便的树操作面板
  * 
  * @author lei
  */
@@ -137,7 +136,6 @@ public class DiscoveryTree extends JPanel {
 
 				@Override
 				public void valueChanged(TreeSelectionEvent event) {
-					System.out.println("tree selection event");
 
 					if (event.getNewLeadSelectionPath() == null) {
 						return;
@@ -160,7 +158,6 @@ public class DiscoveryTree extends JPanel {
 	 */
 	public INode getSelectedTreeNode() {
 		Object selectedPathComponent = tree.getLastSelectedPathComponent();
-		List<CheckableTreeNode> checkedList = tree.getLastCheckedNodes();
 
 		if (selectedPathComponent != null && selectedPathComponent instanceof DiscoveryNode) {
 			return ((DiscoveryNode) selectedPathComponent).getNodeObject();
