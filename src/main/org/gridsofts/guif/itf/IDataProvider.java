@@ -20,4 +20,11 @@ public interface IDataProvider<T> {
 	 * @return
 	 */
 	public List<T> listData();
+
+	/**
+	 * 注册数据更新事件监听
+	 * 
+	 * @param listener
+	 */
+	public void addEventListener(IDataChangedListener listener);
 }

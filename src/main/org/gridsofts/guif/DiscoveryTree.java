@@ -115,12 +115,26 @@ public class DiscoveryTree extends JPanel {
 	}
 
 	/**
+	 * @return the dataProvider
+	 */
+	public IDataProvider<INode> getDataProvider() {
+		return dataProvider;
+	}
+
+	/**
 	 * 设置数据源
 	 * 
 	 * @param dataProvider
 	 */
 	public void setDataProvider(IDataProvider<INode> dataProvider) {
 		this.dataProvider = dataProvider;
+	}
+
+	/**
+	 * @return the discoveryListener
+	 */
+	public IDiscoveryListener getDiscoveryListener() {
+		return discoveryListener;
 	}
 
 	/**

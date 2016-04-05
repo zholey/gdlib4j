@@ -17,11 +17,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
 
 import org.gridsofts.guif.Menubar.Action;
 import org.gridsofts.guif.event.EventObject;
 import org.gridsofts.guif.itf.IAuthentication;
+import org.gridsofts.guif.itf.IDataChangedListener;
 import org.gridsofts.guif.itf.IDataProvider;
 import org.gridsofts.guif.itf.IDiscoveryListener;
 import org.gridsofts.guif.itf.IMenuListener;
@@ -37,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author lei
  */
-public class Application extends JFrame implements IMenuListener {
+public class Application extends JFrame implements IMenuListener, IDataChangedListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(Application.class);
 
@@ -86,12 +89,20 @@ public class Application extends JFrame implements IMenuListener {
 	}
 
 	public Application setDiscoveryProvider(IDataProvider<INode> dataProvider) {
-		discovery.setDataProvider(dataProvider);
+
+		if (dataProvider != null) {
+			discovery.setDataProvider(dataProvider);
+			dataProvider.addEventListener(this);
+		}
 		return this;
 	}
 
-	public Menubar addMenuItem(String menuName, String itemName, Action action) {
+	public JMenuItem addMenuItem(String menuName, String itemName, Action action) {
 		return menubar.addMenuItem(menuName, itemName, action);
+	}
+
+	public JMenu addMenuSeparator(String menuName) {
+		return menubar.addMenuSeparator(menuName);
 	}
 
 	/**
@@ -105,20 +116,15 @@ public class Application extends JFrame implements IMenuListener {
 
 			try {
 				logger.debug("需要验证用户身份，等待登录完成 ...");
-				
+
 				synchronized (this) {
 					wait();
 				}
 			} catch (InterruptedException e) {
 				logger.error("主线程无法转入等待状态", e);
-				
+
 				System.exit(-1);
 			}
-		}
-
-		// association listener
-		if (discoveryListener != null) {
-			discovery.addDiscoveryListener(discoveryListener);
 		}
 
 		if (windowListener == null) {
@@ -139,6 +145,11 @@ public class Application extends JFrame implements IMenuListener {
 
 		// show
 		setVisible(true);
+
+		// association listener
+		if (discoveryListener != null) {
+			discovery.addDiscoveryListener(discoveryListener);
+		}
 
 		// init data
 		discovery.refresh();
@@ -172,12 +183,11 @@ public class Application extends JFrame implements IMenuListener {
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 
 		// 左侧树面板
-		splitPane.add(discovery = new DiscoveryTree());
+		splitPane.setLeftComponent(discovery = new DiscoveryTree());
 		discovery.refresh();
 
 		// 右侧主容器
-		workbenchPane = new JCloseableTabbedPane();
-		splitPane.add(workbenchPane);
+		splitPane.setRightComponent(workbenchPane = new JCloseableTabbedPane());
 
 		// 状态栏
 		getContentPane().add(statusbar = Statusbar.getInstance(), BorderLayout.SOUTH);
@@ -213,6 +223,15 @@ public class Application extends JFrame implements IMenuListener {
 		dialog.setVisible(true);
 	}
 
+	@Override
+	public void onDataChanged(EventObject<?> event) {
+		
+		// 判断当前的数据更新事件源
+		if (event.getSource() == discovery.getDataProvider()) {
+			discovery.refresh();
+		}
+	}
+
 	/*
 	 * 用户点击菜单项
 	 * 
@@ -231,7 +250,7 @@ public class Application extends JFrame implements IMenuListener {
 			if (actionObj != null && Runnable.class.isAssignableFrom(actionObj.getClass())) {
 				_asyncService.execute((Runnable) actionObj);
 			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
-				
+
 				try {
 					_asyncService.execute((Runnable) ((Class) actionObj).newInstance());
 				} catch (InstantiationException e) {
@@ -244,7 +263,7 @@ public class Application extends JFrame implements IMenuListener {
 			if (actionObj != null && JComponent.class.isAssignableFrom(actionObj.getClass())) {
 				appendToWorkbench((JComponent) actionObj);
 			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
-				
+
 				try {
 					appendToWorkbench((JComponent) ((Class) actionObj).newInstance());
 				} catch (InstantiationException e) {
@@ -257,7 +276,7 @@ public class Application extends JFrame implements IMenuListener {
 			if (actionObj != null && JComponent.class.isAssignableFrom(actionObj.getClass())) {
 				popupModalDialog((JComponent) actionObj);
 			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
-				
+
 				try {
 					popupModalDialog((JComponent) ((Class) actionObj).newInstance());
 				} catch (InstantiationException e) {

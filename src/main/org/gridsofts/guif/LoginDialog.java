@@ -76,7 +76,9 @@ public class LoginDialog extends JFrame {
 		getContentPane().add(form, BorderLayout.CENTER);
 
 		// copyright
-		getContentPane().add(new Copyright(), BorderLayout.SOUTH);
+		if (!"true".equalsIgnoreCase(configure.getProperty("guif.copyright.hide"))) {
+			getContentPane().add(new Copyright(), BorderLayout.SOUTH);
+		}
 
 		// resize & location
 		pack();

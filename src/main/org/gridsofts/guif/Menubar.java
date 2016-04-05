@@ -45,7 +45,7 @@ public class Menubar extends JMenuBar {
 		evtDispatcher = new EventDispatcher<IMenuListener, EventObject<Action>>();
 	}
 
-	public Menubar addMenuItem(String menuName, String itemName, Action action) {
+	public JMenuItem addMenuItem(String menuName, String itemName, Action action) {
 
 		JMenu menu = null;
 		if (menuNameMap.containsKey(menuName)) {
@@ -57,7 +57,21 @@ public class Menubar extends JMenuBar {
 		JMenuItem menuItem = menu.add(new JMenuItem(itemName));
 		menuItem.addActionListener(new MenuItemActionAdapter(action));
 
-		return this;
+		return menuItem;
+	}
+
+	public JMenu addMenuSeparator(String menuName) {
+
+		JMenu menu = null;
+		if (menuNameMap.containsKey(menuName)) {
+			menu = menuNameMap.get(menuName);
+		} else {
+			menuNameMap.put(menuName, menu = add(new JMenu(menuName)));
+		}
+		
+		menu.addSeparator();
+
+		return menu;
 	}
 
 	public void addMenuListener(IMenuListener listener) {
