@@ -3,7 +3,7 @@
  * 
  * 未经书面授权，不得擅自复制、影印、储存或散播。
  */
-package org.gridsofts.swing.tree;
+package org.gridsofts.swing.treeClasses;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

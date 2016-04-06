@@ -3,7 +3,7 @@
  * 
  * 未经书面授权，不得擅自复制、影印、储存或散播。
  */
-package org.gridsofts.guif.event;
+package org.gridsofts.util;
 
 /**
  * 通用的事件对象

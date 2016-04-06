@@ -31,8 +31,8 @@ import org.gridsofts.guif.itf.INode;
 import org.gridsofts.guif.tree.DiscoveryNode;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.border.ScatterLineBorder;
-import org.gridsofts.swing.tree.CheckableTreeCellRenderer;
 import org.gridsofts.swing.tree.JCheckableTree;
+import org.gridsofts.swing.treeClasses.CheckableTreeCellRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

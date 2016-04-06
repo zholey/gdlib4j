@@ -18,6 +18,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.gridsofts.swing.treeClasses.CheckableTreeNode;
+
 /**
  * @author lei
  */

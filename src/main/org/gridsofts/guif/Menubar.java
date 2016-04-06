@@ -16,9 +16,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import org.gridsofts.guif.event.EventObject;
 import org.gridsofts.guif.itf.IMenuListener;
 import org.gridsofts.util.EventDispatcher;
+import org.gridsofts.util.EventObject;
 
 /**
  * 系统菜单栏

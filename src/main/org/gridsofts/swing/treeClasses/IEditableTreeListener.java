@@ -3,21 +3,16 @@
  * 
  * 未经书面授权，不得擅自复制、影印、储存或散播。
  */
-package org.gridsofts.guif.itf;
-
-import java.util.EventListener;
+package org.gridsofts.swing.treeClasses;
 
 import org.gridsofts.util.EventObject;
 
 /**
+ * 可编辑树事件监听
+ * 
  * @author lei
  */
-public interface IStateListener extends EventListener {
-	
-	/**
-	 * 显示状态栏消息
-	 * 
-	 * @param event
-	 */
-	public void statusMsg(EventObject<String> event);
+public interface IEditableTreeListener {
+
+	public void onTreeNodeChanged(EventObject<? extends TreeUserObject> event);
 }

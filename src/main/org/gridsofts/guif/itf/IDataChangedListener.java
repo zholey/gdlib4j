@@ -7,7 +7,7 @@ package org.gridsofts.guif.itf;
 
 import java.util.EventListener;
 
-import org.gridsofts.guif.event.EventObject;
+import org.gridsofts.util.EventObject;
 
 /**
  * 提供数据变动的公共接口

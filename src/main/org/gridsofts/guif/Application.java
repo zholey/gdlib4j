@@ -22,7 +22,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
 
 import org.gridsofts.guif.Menubar.Action;
-import org.gridsofts.guif.event.EventObject;
 import org.gridsofts.guif.itf.IAuthentication;
 import org.gridsofts.guif.itf.IDataChangedListener;
 import org.gridsofts.guif.itf.IDataProvider;
@@ -33,6 +32,7 @@ import org.gridsofts.guif.itf.IWindowListener;
 import org.gridsofts.guif.support.Session;
 import org.gridsofts.swing.JCloseableTabbedPane;
 import org.gridsofts.util.Configure;
+import org.gridsofts.util.EventObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

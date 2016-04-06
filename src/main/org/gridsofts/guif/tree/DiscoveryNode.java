@@ -6,7 +6,7 @@
 package org.gridsofts.guif.tree;
 
 import org.gridsofts.guif.itf.INode;
-import org.gridsofts.swing.tree.CheckableTreeNode;
+import org.gridsofts.swing.treeClasses.CheckableTreeNode;
 
 /**
  * 树节点
