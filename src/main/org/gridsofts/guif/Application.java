@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -63,6 +65,9 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 	private IWindowListener windowListener = null;
 
 	private IDiscoveryListener discoveryListener = null;
+	
+	/******/
+	private final Map<String, Object> session = new ConcurrentHashMap<String, Object>();
 
 	public Application(Configure configure) {
 		_instance = this;
@@ -103,6 +108,10 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 
 	public JMenu addMenuSeparator(String menuName) {
 		return menubar.addMenuSeparator(menuName);
+	}
+	
+	public Map<String, Object> getSession() {
+		return session;
 	}
 
 	/**
