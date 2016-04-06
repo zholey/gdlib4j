@@ -49,7 +49,7 @@ public class LoginDialog extends JFrame {
 	public LoginDialog(IAuthentication authenticator, Configure configure) {
 		this.authenticator = authenticator;
 
-		setTitle(configure.getProperty("guif.title", "\u7CFB\u7EDF\u767B\u5F55"));
+		setTitle(configure.getProperty("guif.login.title", "\u7CFB\u7EDF\u767B\u5F55"));
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
