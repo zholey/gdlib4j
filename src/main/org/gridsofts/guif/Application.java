@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,6 +30,7 @@ import org.gridsofts.guif.itf.IDiscoveryListener;
 import org.gridsofts.guif.itf.IMenuListener;
 import org.gridsofts.guif.itf.INode;
 import org.gridsofts.guif.itf.IWindowListener;
+import org.gridsofts.guif.support.Session;
 import org.gridsofts.swing.JCloseableTabbedPane;
 import org.gridsofts.util.Configure;
 import org.slf4j.Logger;
@@ -67,7 +66,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 	private IDiscoveryListener discoveryListener = null;
 	
 	/******/
-	private final Map<String, Object> session = new ConcurrentHashMap<String, Object>();
+	private final Session session = new Session();
 
 	public Application(Configure configure) {
 		_instance = this;
@@ -110,7 +109,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 		return menubar.addMenuSeparator(menuName);
 	}
 	
-	public Map<String, Object> getSession() {
+	public Session getSession() {
 		return session;
 	}
 
