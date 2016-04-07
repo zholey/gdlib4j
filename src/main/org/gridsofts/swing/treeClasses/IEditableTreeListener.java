@@ -5,6 +5,8 @@
  */
 package org.gridsofts.swing.treeClasses;
 
+import java.util.EventListener;
+
 import org.gridsofts.util.EventObject;
 
 /**
@@ -12,7 +14,19 @@ import org.gridsofts.util.EventObject;
  * 
  * @author lei
  */
-public interface IEditableTreeListener {
+public interface IEditableTreeListener extends EventListener {
 
-	public void onTreeNodeChanged(EventObject<? extends TreeUserObject> event);
+	/**
+	 * 选中一个节点
+	 * 
+	 * @param event
+	 */
+	public void onSelectedNode(EventObject<IEditableTreeNode> event);
+
+	/**
+	 * 节点发生更改
+	 * 
+	 * @param event
+	 */
+	public void onTreeNodeChanged(EventObject<IEditableTreeNode> event);
 }

@@ -5,15 +5,18 @@
  */
 package org.gridsofts.guif.tree;
 
+import java.util.List;
+
 import org.gridsofts.guif.itf.INode;
 import org.gridsofts.swing.treeClasses.CheckableTreeNode;
+import org.gridsofts.swing.treeClasses.IEditableTreeNode;
 
 /**
  * 树节点
  * 
  * @author lei
  */
-public class DiscoveryNode extends CheckableTreeNode {
+public class DiscoveryNode extends CheckableTreeNode implements IEditableTreeNode {
 	private static final long serialVersionUID = 1L;
 
 	public DiscoveryNode(Object userObject) {
@@ -30,6 +33,42 @@ public class DiscoveryNode extends CheckableTreeNode {
 			return (INode) getUserObject();
 		}
 		
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#setName(java.lang.String)
+	 */
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#addChild(org.gridsofts.swing.treeClasses.IEditableTreeNode)
+	 */
+	@Override
+	public void addChild(IEditableTreeNode childObject) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#removeChild(org.gridsofts.swing.treeClasses.IEditableTreeNode)
+	 */
+	@Override
+	public void removeChild(IEditableTreeNode childObject) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#getChildren()
+	 */
+	@Override
+	public List<? extends IEditableTreeNode> getChildren() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -12,39 +12,30 @@ import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.gridsofts.swing.treeClasses.CheckableTreeNode;
+import org.gridsofts.swing.treeClasses.IEditableTreeNode;
 
 /**
  * @author lei
  */
-public class JCheckableTree extends JTree {
+public class JCheckableTree extends JEditableTree {
 	private static final long serialVersionUID = 1L;
 
-	public JCheckableTree() {
-		this(getDefaultTreeModel());
-	}
-
-	public JCheckableTree(TreeModel treeModel) {
-		super(treeModel);
-
-		TreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
-		selectionModel.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		setSelectionModel(selectionModel);
+	public JCheckableTree(IEditableTreeNode root) {
+		super(root);
 
 		addMouseListener(new TreeMouseListener());
 	}
 
 	public List<CheckableTreeNode> getLastCheckedNodes() {
-		return getLastCheckedNodes(null);
+		return _getLastCheckedNodes(null);
 	}
 	
-	private List<CheckableTreeNode> getLastCheckedNodes(Object rootTreeNode) {
+	private List<CheckableTreeNode> _getLastCheckedNodes(Object rootTreeNode) {
 		List<CheckableTreeNode> checkedList = new ArrayList<CheckableTreeNode>();
 
 		if (rootTreeNode == null) {
@@ -62,7 +53,7 @@ public class JCheckableTree extends JTree {
 
 			else if (!mutableTreeNode.isLeaf() && mutableTreeNode.getChildCount() > 0) {
 				for (int i = 0; i < mutableTreeNode.getChildCount(); i++) {
-					checkedList.addAll(getLastCheckedNodes(mutableTreeNode.getChildAt(i)));
+					checkedList.addAll(_getLastCheckedNodes(mutableTreeNode.getChildAt(i)));
 				}
 			}
 		}

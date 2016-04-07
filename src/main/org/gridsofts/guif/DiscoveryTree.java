@@ -103,7 +103,7 @@ public class DiscoveryTree extends JPanel {
 		// 树节点快速搜索
 		treeNodeMap = new HashMap<String, DiscoveryNode>();
 
-		tree = new JCheckableTree(treeModel);
+		tree = new JCheckableTree(treeRootNode);
 		tree.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
 		tree.setRowHeight(22);
 
