@@ -10,23 +10,23 @@ import java.util.EventListener;
 import org.gridsofts.util.EventObject;
 
 /**
- * 可编辑树事件监听
+ * 树监听
  * 
  * @author lei
  */
-public interface IEditableTreeListener extends EventListener {
+public interface ITreeListener extends EventListener {
 
 	/**
 	 * 选中一个节点
 	 * 
 	 * @param event
 	 */
-	public void onSelectedNode(EventObject<IEditableTreeNode> event);
+	public void onSelectedNode(EventObject<ITreeNode> event);
 
 	/**
 	 * 节点发生更改
 	 * 
 	 * @param event
 	 */
-	public void onTreeNodeChanged(EventObject<IEditableTreeNode> event);
+	public void onTreeNodeChanged(EventObject<ITreeNode> event);
 }

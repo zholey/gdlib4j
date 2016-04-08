@@ -19,7 +19,7 @@ public interface IDataProvider<T> {
 	 * 
 	 * @return
 	 */
-	public List<T> listData();
+	public List<? extends T> listData();
 
 	/**
 	 * 注册数据更新事件监听

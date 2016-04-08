@@ -10,50 +10,57 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
-import org.gridsofts.swing.treeClasses.CheckableTreeNode;
-import org.gridsofts.swing.treeClasses.IEditableTreeNode;
+import org.gridsofts.swing.treeClasses.CheckableCellRenderer;
+import org.gridsofts.swing.treeClasses.ITreeNode;
 
 /**
  * @author lei
  */
-public class JCheckableTree extends JEditableTree {
+public class JCheckableTree extends AbstractTree {
 	private static final long serialVersionUID = 1L;
 
-	public JCheckableTree(IEditableTreeNode root) {
-		super(root);
+	public JCheckableTree() {
+		super();
 
+		setCellRenderer(new CheckableCellRenderer());
 		addMouseListener(new TreeMouseListener());
 	}
 
-	public List<CheckableTreeNode> getLastCheckedNodes() {
+	/**
+	 * 递归查找所有选中的节点
+	 * 
+	 * @return
+	 */
+	public List<ITreeNode> getLastCheckedNodes() {
 		return _getLastCheckedNodes(null);
 	}
-	
-	private List<CheckableTreeNode> _getLastCheckedNodes(Object rootTreeNode) {
-		List<CheckableTreeNode> checkedList = new ArrayList<CheckableTreeNode>();
 
-		if (rootTreeNode == null) {
-			rootTreeNode = getModel().getRoot();
+	/**
+	 * 递归查找所有选中的节点
+	 * 
+	 * @param mutableNode
+	 * @return
+	 */
+	private List<ITreeNode> _getLastCheckedNodes(DefaultMutableTreeNode mutableNode) {
+		List<ITreeNode> checkedList = new ArrayList<ITreeNode>();
+
+		if (mutableNode == null) {
+			mutableNode = (DefaultMutableTreeNode) getModel().getRoot();
 		}
 
-		if (rootTreeNode != null && MutableTreeNode.class.isAssignableFrom(rootTreeNode.getClass())) {
-			MutableTreeNode mutableTreeNode = (MutableTreeNode) rootTreeNode;
+		if (mutableNode != null) {
+			ITreeNode treeNode = (ITreeNode) mutableNode.getUserObject();
 
-			if (mutableTreeNode.isLeaf() && CheckableTreeNode.class.isAssignableFrom(mutableTreeNode.getClass())
-					&& ((CheckableTreeNode) mutableTreeNode).isSelected()) {
-
-				checkedList.add((CheckableTreeNode) mutableTreeNode);
+			if (mutableNode.isLeaf() && treeNode.isSelected()) {
+				checkedList.add(treeNode);
 			}
 
-			else if (!mutableTreeNode.isLeaf() && mutableTreeNode.getChildCount() > 0) {
-				for (int i = 0; i < mutableTreeNode.getChildCount(); i++) {
-					checkedList.addAll(_getLastCheckedNodes(mutableTreeNode.getChildAt(i)));
+			else if (!mutableNode.isLeaf() && mutableNode.getChildCount() > 0) {
+				for (int i = 0; i < mutableNode.getChildCount(); i++) {
+					checkedList.addAll(_getLastCheckedNodes((DefaultMutableTreeNode) mutableNode.getChildAt(i)));
 				}
 			}
 		}
@@ -61,21 +68,116 @@ public class JCheckableTree extends JEditableTree {
 		return checkedList;
 	}
 
+	/**
+	 * 设置指定节点的选中状态，递归调用；
+	 * 
+	 * @param mutableNode
+	 *            将要设置选中状态的节点
+	 * @param isSelected
+	 *            选中标志
+	 * @param direction
+	 *            递归搜索方向（0:双方向搜索； 1:只搜索子级节点； -1:只搜索父级节点）
+	 */
+	private void _setTreeNodeSelected(DefaultMutableTreeNode mutableNode, boolean isSelected, int direction) {
+		ITreeNode treeNode = (ITreeNode) mutableNode.getUserObject();
+		treeNode.setSelected(isSelected);
+
+		if (treeNode.isSelected()) {
+
+			// 如果选中，则将其所有的子结点都选中
+			if (direction >= 0 && mutableNode.getChildCount() > 0) {
+				for (int i = 0; i < mutableNode.getChildCount(); i++) {
+					DefaultMutableTreeNode childMutableNode = (DefaultMutableTreeNode) mutableNode.getChildAt(i);
+					ITreeNode childTreeNode = (ITreeNode) childMutableNode.getUserObject();
+
+					if (!childTreeNode.isSelected()) {
+						_setTreeNodeSelected(childMutableNode, true, 1);
+					}
+				}
+			}
+
+			// 向上检查，如果父结点的所有子结点都被选中，那么将父结点也选中
+			SelectUp: if (direction <= 0 && mutableNode.getParent() != null) {
+				DefaultMutableTreeNode parentMutableNode = (DefaultMutableTreeNode) mutableNode.getParent();
+				ITreeNode parentTreeNode = (ITreeNode) parentMutableNode.getUserObject();
+				
+				// 如果当前节点的父节点已经选中，则立即跳出
+				if (parentTreeNode.isSelected()) {
+					break SelectUp;
+				}
+
+				// 开始检查所有子节点是否都被选中
+				boolean isAllSelected = true;
+				for (int i = 0; i < parentMutableNode.getChildCount(); i++) {
+					DefaultMutableTreeNode childMutableNode = (DefaultMutableTreeNode) parentMutableNode.getChildAt(i);
+					ITreeNode childTreeNode = (ITreeNode) childMutableNode.getUserObject();
+
+					if (!childTreeNode.isSelected()) {
+						isAllSelected = false;
+						break;
+					}
+				}
+				
+				// 所有子结点都已经选中，则选中父结点
+				if (isAllSelected) {
+					_setTreeNodeSelected(parentMutableNode, true, -1);
+				}
+			}
+		} else {
+			
+			// 父节点取消，那么所有子节点都要取消
+			if (direction >= 0 && mutableNode.getChildCount() > 0) {
+
+				// 从上向下取消的时候
+				for (int i = 0; i < mutableNode.getChildCount(); ++i) {
+					DefaultMutableTreeNode childMutableNode = (DefaultMutableTreeNode) mutableNode.getChildAt(i);
+					ITreeNode childTreeNode = (ITreeNode) childMutableNode.getUserObject();
+
+					if (childTreeNode.isSelected()) {
+						_setTreeNodeSelected(childMutableNode, false, 1);
+					}
+				}
+			}
+
+			// 向上取消，只要存在一个子节点未选中，那么父节点就不应该被选中
+			if (direction <= 0 && mutableNode.getParent() != null) {
+				DefaultMutableTreeNode parentMutableNode = (DefaultMutableTreeNode) mutableNode.getParent();
+				ITreeNode parentTreeNode = (ITreeNode) parentMutableNode.getUserObject();
+
+				if (parentTreeNode != null) {
+					_setTreeNodeSelected(parentMutableNode, false, -1);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 鼠标按下事件监听； 处理勾选动作
+	 * 
+	 * @author lei
+	 */
 	private class TreeMouseListener extends MouseAdapter {
 
 		@Override
 		public void mousePressed(MouseEvent event) {
 
-			JTree tree = (JTree) event.getSource();
+			if (MouseEvent.BUTTON1 != event.getButton() || event.isControlDown() || event.isAltDown()
+					|| event.isShiftDown() || event.getClickCount() > 1) {
+				return;
+			}
 
-			TreePath path = tree.getPathForRow(tree.getRowForLocation(event.getX(), event.getY()));
+			int rowForLocation = JCheckableTree.this.getRowForLocation(event.getX(), event.getY());
+			TreePath pathForLocation = JCheckableTree.this.getPathForRow(rowForLocation);
 
-			if (path != null && path.getLastPathComponent() != null
-					&& path.getLastPathComponent() instanceof CheckableTreeNode) {
-				CheckableTreeNode node = (CheckableTreeNode) path.getLastPathComponent();
+			if (pathForLocation != null && pathForLocation.getLastPathComponent() != null
+					&& pathForLocation.getLastPathComponent() instanceof DefaultMutableTreeNode) {
 
-				node.setSelected(!node.isSelected());
-				((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+				DefaultMutableTreeNode mutableNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
+
+				ITreeNode treeNode = (ITreeNode) mutableNode.getUserObject();
+				_setTreeNodeSelected(mutableNode, !treeNode.isSelected(), 0);
+
+				JCheckableTree.this.updateUI();
 			}
 		}
 	}

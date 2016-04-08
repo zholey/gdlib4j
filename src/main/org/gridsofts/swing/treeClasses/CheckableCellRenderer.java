@@ -17,6 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.gridsofts.resource.Resources;
@@ -27,19 +28,19 @@ import org.gridsofts.swing.border.ScatterLineBorder;
  * 
  * @author lei
  */
-public class CheckableTreeCellRenderer extends JPanel implements TreeCellRenderer {
+public class CheckableCellRenderer extends JPanel implements TreeCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 	private ImageIcon branchOpenIcon, branchCloseIcon, leafIcon;
 	private JCheckBox chkbox;
 	private JLabel label;
 
-	public CheckableTreeCellRenderer() {
+	public CheckableCellRenderer() {
 		this(new ImageIcon(Resources.Image.get("folder-open.png")), new ImageIcon(Resources.Image.get("folder.png")),
 				new ImageIcon(Resources.Image.get("document.png")));
 	}
 
-	public CheckableTreeCellRenderer(ImageIcon branchOpenIcon, ImageIcon branchCloseIcon, ImageIcon leafIcon) {
+	public CheckableCellRenderer(ImageIcon branchOpenIcon, ImageIcon branchCloseIcon, ImageIcon leafIcon) {
 		this.branchOpenIcon = branchOpenIcon;
 		this.branchCloseIcon = branchCloseIcon;
 		this.leafIcon = leafIcon;
@@ -97,17 +98,25 @@ public class CheckableTreeCellRenderer extends JPanel implements TreeCellRendere
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
 			boolean leaf, int row, boolean hasFocus) {
 
-		if (value != null && CheckableTreeNode.class.isAssignableFrom(value.getClass())) {
+		if (value != null && DefaultMutableTreeNode.class.isAssignableFrom(value.getClass())) {
+			DefaultMutableTreeNode mutableNode = (DefaultMutableTreeNode) value;
 
-			chkbox.setSelected(((CheckableTreeNode) value).isSelected);
+			if (mutableNode.getUserObject() != null) {
 
-			label.setText(value.toString());
-			if (leaf) {
-				label.setIcon(leafIcon);
-			} else if (expanded) {
-				label.setIcon(branchOpenIcon);
-			} else {
-				label.setIcon(branchCloseIcon);
+				label.setText(mutableNode.getUserObject().toString());
+				if (leaf) {
+					label.setIcon(leafIcon);
+				} else if (expanded) {
+					label.setIcon(branchOpenIcon);
+				} else {
+					label.setIcon(branchCloseIcon);
+				}
+				
+				if (ITreeNode.class.isAssignableFrom(mutableNode.getUserObject().getClass())) {
+					ITreeNode treeNode = (ITreeNode) mutableNode.getUserObject();
+
+					chkbox.setSelected(treeNode.isSelected());
+				}
 			}
 
 			if (selected) {

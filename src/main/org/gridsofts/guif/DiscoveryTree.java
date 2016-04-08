@@ -10,9 +10,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,19 +18,14 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.gridsofts.guif.itf.IDataProvider;
-import org.gridsofts.guif.itf.IDiscoveryListener;
-import org.gridsofts.guif.itf.INode;
 import org.gridsofts.guif.tree.DiscoveryNode;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.border.ScatterLineBorder;
 import org.gridsofts.swing.tree.JCheckableTree;
-import org.gridsofts.swing.treeClasses.CheckableTreeCellRenderer;
+import org.gridsofts.swing.treeClasses.ITreeListener;
+import org.gridsofts.swing.treeClasses.ITreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +41,7 @@ public class DiscoveryTree extends JPanel {
 	private JToolBar toolbar;
 	private JCheckableTree tree;
 
-	private DefaultTreeModel treeModel;
 	private DiscoveryNode treeRootNode;
-	private Map<String, DiscoveryNode> treeNodeMap;
 
 	// 工具栏按钮
 	private JButton btnRefresh, btnExpandAll, btnCollapseAll;
@@ -58,8 +49,7 @@ public class DiscoveryTree extends JPanel {
 	// 工具栏按钮动作
 	private ActionListener btnRefreshAction, btnExpandAllAction;
 
-	private IDiscoveryListener discoveryListener;
-	private IDataProvider<INode> dataProvider;
+	private IDataProvider<ITreeNode> dataProvider;
 
 	public DiscoveryTree() {
 		super(new BorderLayout());
@@ -99,15 +89,9 @@ public class DiscoveryTree extends JPanel {
 
 		// 树
 		treeRootNode = new DiscoveryNode("[ROOT]");
-		treeModel = new DefaultTreeModel(treeRootNode);
-		// 树节点快速搜索
-		treeNodeMap = new HashMap<String, DiscoveryNode>();
 
-		tree = new JCheckableTree(treeRootNode);
+		tree = new JCheckableTree();
 		tree.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
-		tree.setRowHeight(22);
-
-		tree.setCellRenderer(new CheckableTreeCellRenderer());
 
 		JScrollPane treeScroller = new JScrollPane(tree);
 		treeScroller.setBorder(BorderFactory.createEmptyBorder());
@@ -117,7 +101,7 @@ public class DiscoveryTree extends JPanel {
 	/**
 	 * @return the dataProvider
 	 */
-	public IDataProvider<INode> getDataProvider() {
+	public IDataProvider<ITreeNode> getDataProvider() {
 		return dataProvider;
 	}
 
@@ -126,15 +110,8 @@ public class DiscoveryTree extends JPanel {
 	 * 
 	 * @param dataProvider
 	 */
-	public void setDataProvider(IDataProvider<INode> dataProvider) {
+	public void setDataProvider(IDataProvider<ITreeNode> dataProvider) {
 		this.dataProvider = dataProvider;
-	}
-
-	/**
-	 * @return the discoveryListener
-	 */
-	public IDiscoveryListener getDiscoveryListener() {
-		return discoveryListener;
 	}
 
 	/**
@@ -142,27 +119,8 @@ public class DiscoveryTree extends JPanel {
 	 * 
 	 * @param listener
 	 */
-	public void addDiscoveryListener(IDiscoveryListener listener) {
-		discoveryListener = listener;
-
-		if (discoveryListener != null) {
-			tree.addTreeSelectionListener(new TreeSelectionListener() {
-
-				@Override
-				public void valueChanged(TreeSelectionEvent event) {
-
-					if (event.getNewLeadSelectionPath() == null) {
-						return;
-					}
-
-					Object treeNode = event.getNewLeadSelectionPath().getLastPathComponent();
-
-					if (treeNode != null && treeNode instanceof DiscoveryNode) {
-						discoveryListener.selectedTreeNode(((DiscoveryNode) treeNode).getNodeObject());
-					}
-				}
-			});
-		}
+	public void addTreeListener(ITreeListener listener) {
+		tree.addTreeListener(listener);
 	}
 
 	/**
@@ -170,14 +128,8 @@ public class DiscoveryTree extends JPanel {
 	 * 
 	 * @return
 	 */
-	public INode getSelectedTreeNode() {
-		Object selectedPathComponent = tree.getLastSelectedPathComponent();
-
-		if (selectedPathComponent != null && selectedPathComponent instanceof DiscoveryNode) {
-			return ((DiscoveryNode) selectedPathComponent).getNodeObject();
-		}
-
-		return null;
+	public ITreeNode getSelectedTreeNode() {
+		return tree.getSelectedTreeNode();
 	}
 
 	/**
@@ -194,11 +146,7 @@ public class DiscoveryTree extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent event) {
-			tree.updateUI();
-
-			for (int i = 0; i < tree.getRowCount(); i++) {
-				tree.collapseRow(i);
-			}
+			tree.collapseAll();
 		}
 	}
 
@@ -209,11 +157,7 @@ public class DiscoveryTree extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent event) {
-			tree.updateUI();
-
-			for (int i = 0; i < tree.getRowCount(); i++) {
-				tree.expandRow(i);
-			}
+			tree.expandAll();
 		}
 	}
 
@@ -231,33 +175,21 @@ public class DiscoveryTree extends JPanel {
 
 			logger.debug("刷新树节点 ...");
 
-			treeNodeMap.clear();
-			treeRootNode.removeAllChildren();
+			treeRootNode.removeAll();
 			treeRootNode.setSelected(false);
 			tree.updateUI();
 
-			List<INode> treeNodes = dataProvider.listData();
+			List<? extends ITreeNode> treeNodes = dataProvider.listData();
 			if (treeNodes != null && treeNodes.size() > 0) {
-				for (INode nodeObj : treeNodes) {
-					recursionTreeNodes(nodeObj, treeRootNode);
+				
+				for (ITreeNode nodeObj : treeNodes) {
+					treeRootNode.add(nodeObj);
 				}
+				
+				tree.setRootTreeNode(treeRootNode);
 			}
 
 			btnExpandAllAction.actionPerformed(null);
-		}
-
-		private void recursionTreeNodes(INode nodeObj, DefaultMutableTreeNode parentTreeNode) {
-			DiscoveryNode treeNode = new DiscoveryNode(nodeObj);
-			parentTreeNode.add(treeNode);
-
-			// 加入快速搜索图
-			treeNodeMap.put(nodeObj.getNodeId(), treeNode);
-
-			if (nodeObj.getChildren() != null) {
-				for (INode childNode : nodeObj.getChildren()) {
-					recursionTreeNodes(childNode, treeNode);
-				}
-			}
 		}
 	}
 }

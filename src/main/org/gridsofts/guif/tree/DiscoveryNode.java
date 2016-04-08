@@ -5,80 +5,71 @@
  */
 package org.gridsofts.guif.tree;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.gridsofts.guif.itf.INode;
-import org.gridsofts.swing.treeClasses.CheckableTreeNode;
-import org.gridsofts.swing.treeClasses.IEditableTreeNode;
+import org.gridsofts.swing.treeClasses.ITreeNode;
 
 /**
  * 树节点
  * 
  * @author lei
  */
-public class DiscoveryNode extends CheckableTreeNode implements IEditableTreeNode {
+public class DiscoveryNode implements ITreeNode, Serializable {
 	private static final long serialVersionUID = 1L;
-
-	public DiscoveryNode(Object userObject) {
-		super(userObject);
+	
+	private String id;
+	private String nodeName;
+	private boolean selected;
+	
+	private List<ITreeNode> children = new ArrayList<ITreeNode>();
+	
+	public DiscoveryNode(String name) {
+		nodeName = name;
 	}
 
-	public DiscoveryNode(INode nodeObject) {
-		super(nodeObject);
+	@Override
+	public String getNodeId() {
+		return id;
+	}
+
+	@Override
+	public String getNodeName() {
+		return nodeName;
+	}
+
+	@Override
+	public void setNodeName(String name) {
+		nodeName = name;		
+	}
+
+	@Override
+	public boolean isSelected() {
+		return selected;
+	}
+
+	@Override
+	public void setSelected(boolean value) {
+		selected = value;		
+	}
+
+	@Override
+	public void add(ITreeNode child) {
+		children.add(child);		
+	}
+
+	@Override
+	public void remove(ITreeNode child) {
+		children.remove(child);		
 	}
 	
-	public INode getNodeObject() {
-		
-		if (getUserObject() != null && getUserObject() instanceof INode) {
-			return (INode) getUserObject();
-		}
-		
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#setName(java.lang.String)
-	 */
-	@Override
-	public void setName(String name) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#addChild(org.gridsofts.swing.treeClasses.IEditableTreeNode)
-	 */
-	@Override
-	public void addChild(IEditableTreeNode childObject) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#removeChild(org.gridsofts.swing.treeClasses.IEditableTreeNode)
-	 */
-	@Override
-	public void removeChild(IEditableTreeNode childObject) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.gridsofts.swing.treeClasses.IEditableTreeNode#getChildren()
-	 */
-	@Override
-	public List<? extends IEditableTreeNode> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
+	public void removeAll() {
+		children.removeAll(children);
 	}
 
 	@Override
-	public String toString() {
-
-		if (getUserObject() != null && INode.class.isAssignableFrom(getUserObject().getClass())) {
-			return ((INode) getUserObject()).getNodeName();
-		}
-
-		return super.toString();
+	public List<ITreeNode> getChildren() {
+		return children;
 	}
 }

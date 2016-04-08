@@ -25,12 +25,12 @@ import org.gridsofts.guif.Menubar.Action;
 import org.gridsofts.guif.itf.IAuthentication;
 import org.gridsofts.guif.itf.IDataChangedListener;
 import org.gridsofts.guif.itf.IDataProvider;
-import org.gridsofts.guif.itf.IDiscoveryListener;
 import org.gridsofts.guif.itf.IMenuListener;
-import org.gridsofts.guif.itf.INode;
 import org.gridsofts.guif.itf.IWindowListener;
 import org.gridsofts.guif.support.Session;
 import org.gridsofts.swing.JCloseableTabbedPane;
+import org.gridsofts.swing.treeClasses.ITreeListener;
+import org.gridsofts.swing.treeClasses.ITreeNode;
 import org.gridsofts.util.Configure;
 import org.gridsofts.util.EventObject;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 	private IAuthentication authenticator = null;
 	private IWindowListener windowListener = null;
 
-	private IDiscoveryListener discoveryListener = null;
+	private ITreeListener discoveryListener = null;
 	
 	/******/
 	private final Session session = new Session();
@@ -87,12 +87,12 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 		return this;
 	}
 
-	public Application setDiscoveryListener(IDiscoveryListener listener) {
+	public Application setDiscoveryListener(ITreeListener listener) {
 		discoveryListener = listener;
 		return this;
 	}
 
-	public Application setDiscoveryProvider(IDataProvider<INode> dataProvider) {
+	public Application setDiscoveryProvider(IDataProvider<ITreeNode> dataProvider) {
 
 		if (dataProvider != null) {
 			discovery.setDataProvider(dataProvider);
@@ -156,7 +156,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 
 		// association listener
 		if (discoveryListener != null) {
-			discovery.addDiscoveryListener(discoveryListener);
+			discovery.addTreeListener(discoveryListener);
 		}
 
 		// init data
