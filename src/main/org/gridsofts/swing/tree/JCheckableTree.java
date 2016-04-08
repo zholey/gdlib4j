@@ -27,6 +27,8 @@ public class JCheckableTree extends AbstractTree {
 		super();
 
 		setCellRenderer(new DefaultCellRenderer(ICheckableNode.class));
+
+		// 注册监听
 		addMouseListener(new TreeMouseListener());
 	}
 
@@ -158,6 +160,7 @@ public class JCheckableTree extends AbstractTree {
 
 		@Override
 		public void mousePressed(MouseEvent event) {
+			super.mousePressed(event);
 
 			if (MouseEvent.BUTTON1 != event.getButton() || event.isControlDown() || event.isAltDown()
 					|| event.isShiftDown() || event.getClickCount() > 1) {

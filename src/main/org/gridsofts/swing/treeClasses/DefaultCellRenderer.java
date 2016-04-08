@@ -8,7 +8,6 @@ package org.gridsofts.swing.treeClasses;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,6 +19,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.gridsofts.resource.Resources;
+import org.gridsofts.swing.BorderLayoutII;
 import org.gridsofts.swing.border.ScatterLineBorder;
 
 /**
@@ -42,60 +42,26 @@ public class DefaultCellRenderer extends JPanel implements TreeCellRenderer {
 	public DefaultCellRenderer(Class<?> userObjectClass, ImageIcon branchOpenIcon, ImageIcon branchCloseIcon,
 			ImageIcon leafIcon) {
 
+		super(new BorderLayoutII(BorderLayoutII.VERTICAL_CENTER));
+
 		this.branchOpenIcon = branchOpenIcon;
 		this.branchCloseIcon = branchCloseIcon;
 		this.leafIcon = leafIcon;
 
 		setOpaque(false);
 
+		// 节点文字
+		label = new JLabel();
+		add(label, BorderLayout.CENTER);
+
+		// checkbox
 		if (ICheckableNode.class.isAssignableFrom(userObjectClass)) {
 			chkbox = new JCheckBox();
 			chkbox.setOpaque(false);
 
 			add(chkbox, BorderLayout.WEST);
 		}
-
-		// 节点文字
-		label = new JLabel();
-		label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-
-		add(label, BorderLayout.CENTER);
 	}
-
-	@Override
-	public Insets getInsets() {
-		return new Insets(2, 3, 2, 3);
-	}
-
-	// @Override
-	// public Dimension getPreferredSize() {
-	// Dimension dCheck = chkbox.getPreferredSize();
-	// Dimension dLabel = label.getPreferredSize();
-	//
-	// return new Dimension(dCheck.width + dLabel.width,
-	// dCheck.height < dLabel.height ? dLabel.height : dCheck.height);
-	// }
-	//
-	// @Override
-	// public void doLayout() {
-	// Dimension dCheck = chkbox.getPreferredSize();
-	// Dimension dLabel = label.getPreferredSize();
-	//
-	// int yCheck = 0;
-	// int yLabel = 0;
-	//
-	// if (dCheck.height < dLabel.height) {
-	// yCheck = (dLabel.height - dCheck.height) / 2;
-	// } else {
-	// yLabel = (dCheck.height - dLabel.height) / 2;
-	// }
-	//
-	// chkbox.setLocation(0, yCheck);
-	// chkbox.setBounds(0, yCheck, dCheck.width, dCheck.height);
-	//
-	// label.setLocation(dCheck.width, yLabel);
-	// label.setBounds(dCheck.width, yLabel, dLabel.width, dLabel.height);
-	// }
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
@@ -105,14 +71,23 @@ public class DefaultCellRenderer extends JPanel implements TreeCellRenderer {
 			DefaultMutableTreeNode mutableNode = (DefaultMutableTreeNode) value;
 
 			if (mutableNode.getUserObject() != null) {
-
 				label.setText(mutableNode.getUserObject().toString());
-				if (leaf) {
-					label.setIcon(leafIcon);
-				} else if (expanded) {
-					label.setIcon(branchOpenIcon);
-				} else {
-					label.setIcon(branchCloseIcon);
+
+				// 如果当前节点支持自定义图标
+				if (Iconified.class.isAssignableFrom(mutableNode.getUserObject().getClass())) {
+					Iconified iconableNode = (Iconified) mutableNode.getUserObject();
+					label.setIcon(iconableNode.getIcon(selected, expanded, leaf, hasFocus));
+				} 
+				
+				// 一般节点的默认图标处理
+				else {
+					if (leaf) {
+						label.setIcon(leafIcon);
+					} else if (expanded) {
+						label.setIcon(branchOpenIcon);
+					} else {
+						label.setIcon(branchCloseIcon);
+					}
 				}
 
 				if (chkbox != null && ICheckableNode.class.isAssignableFrom(mutableNode.getUserObject().getClass())) {

@@ -9,6 +9,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.gridsofts.swing.treeClasses.DefaultCellRenderer;
 import org.gridsofts.swing.treeClasses.ITreeNode;
 import org.gridsofts.util.EventObject;
 
@@ -27,6 +28,8 @@ public class JEditableTree extends AbstractTree implements TreeModelListener {
 			setEditable(true);
 			setDragEnabled(true);
 		}
+		
+		setCellRenderer(new DefaultCellRenderer(ITreeNode.class));
 
 		// 注册监听
 		getModel().addTreeModelListener(this);

@@ -71,8 +71,6 @@ public class DiscoveryTree extends JPanel {
 		btnRefresh.setToolTipText("刷新");
 		btnRefresh.addActionListener(btnRefreshAction = new BtnRefreshAction());
 
-		toolbar.addSeparator();
-
 		btnExpandAll = new JButton();
 		toolbar.add(btnExpandAll);
 
