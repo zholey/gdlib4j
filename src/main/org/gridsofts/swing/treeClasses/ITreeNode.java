@@ -36,20 +36,6 @@ public interface ITreeNode {
 	public void setNodeName(String name);
 
 	/**
-	 * 指示当前节点是否已选中
-	 * 
-	 * @return
-	 */
-	public boolean isSelected();
-
-	/**
-	 * 设置当前节点的选中状态
-	 * 
-	 * @param value
-	 */
-	public void setSelected(boolean value);
-
-	/**
 	 * 添加子节点
 	 * 
 	 * @param child

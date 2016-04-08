@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gridsofts.swing.treeClasses.ICheckableNode;
 import org.gridsofts.swing.treeClasses.ITreeNode;
 
 /**
@@ -16,7 +17,7 @@ import org.gridsofts.swing.treeClasses.ITreeNode;
  * 
  * @author lei
  */
-public class DiscoveryNode implements ITreeNode, Serializable {
+public class DiscoveryNode implements ICheckableNode, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
@@ -71,5 +72,10 @@ public class DiscoveryNode implements ITreeNode, Serializable {
 	@Override
 	public List<ITreeNode> getChildren() {
 		return children;
+	}
+	
+	@Override
+	public String toString() {
+		return getNodeName();
 	}
 }
