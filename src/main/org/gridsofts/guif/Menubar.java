@@ -5,13 +5,12 @@
  */
 package org.gridsofts.guif;
 
-import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -68,7 +67,7 @@ public class Menubar extends JMenuBar {
 		} else {
 			menuNameMap.put(menuName, menu = add(new JMenu(menuName)));
 		}
-		
+
 		menu.addSeparator();
 
 		return menu;
@@ -113,20 +112,31 @@ public class Menubar extends JMenuBar {
 			this.action = action;
 
 			// check parameters
+			
+			if (type == null) {
+				throw new IllegalArgumentException("type should be not null");
+			}
+			
+			if (action == null) {
+				throw new IllegalArgumentException("action should be not null");
+			}
 
 			if (Type.COMMAND == type && !Runnable.class.isAssignableFrom(action.getClass())
-					&& !Class.class.isAssignableFrom(action.getClass())) {
+					&& (Class.class.isAssignableFrom(action.getClass())
+							&& !Runnable.class.isAssignableFrom((Class<?>) action))) {
 				throw new IllegalArgumentException("if type == Type.COMMAND, then action should be a Runnable");
 			}
 
-			if (Type.WORKBENCH == type && !Component.class.isAssignableFrom(action.getClass())
-					&& !Class.class.isAssignableFrom(action.getClass())) {
-				throw new IllegalArgumentException("if type == Type.WORKBENCH, then action should be a Component");
+			if (Type.WORKBENCH == type && !JComponent.class.isAssignableFrom(action.getClass())
+					&& (Class.class.isAssignableFrom(action.getClass())
+							&& !JComponent.class.isAssignableFrom((Class<?>) action))) {
+				throw new IllegalArgumentException("if type == Type.WORKBENCH, then action should be a JComponent");
 			}
 
-			if (Type.DIALOG == type && !Dialog.class.isAssignableFrom(action.getClass())
-					&& !Class.class.isAssignableFrom(action.getClass())) {
-				throw new IllegalArgumentException("if type == Type.DIALOG, then action should be a Dialog");
+			if (Type.DIALOG == type && !JComponent.class.isAssignableFrom(action.getClass())
+					&& (Class.class.isAssignableFrom(action.getClass())
+							&& !JComponent.class.isAssignableFrom((Class<?>) action))) {
+				throw new IllegalArgumentException("if type == Type.DIALOG, then action should be a JComponent");
 			}
 		}
 

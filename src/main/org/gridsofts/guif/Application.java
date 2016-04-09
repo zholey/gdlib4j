@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,6 +57,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 
 	private JSplitPane splitPane;
 	private JCloseableTabbedPane workbenchPane;
+	private Map<String, JComponent> _workbenchMap;
 
 	private DiscoveryTree discovery;
 
@@ -64,13 +67,14 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 	private IWindowListener windowListener = null;
 
 	private ITreeListener discoveryListener = null;
-	
+
 	/******/
 	private final Session session = new Session();
 
 	public Application(Configure configure) {
 		_instance = this;
 		_asyncService = Executors.newSingleThreadExecutor();
+		_workbenchMap = new HashMap<String, JComponent>();
 
 		this.configure = configure;
 
@@ -108,7 +112,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 	public JMenu addMenuSeparator(String menuName) {
 		return menubar.addMenuSeparator(menuName);
 	}
-	
+
 	public Session getSession() {
 		return session;
 	}
@@ -217,7 +221,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 		workbenchPane.setSelectedComponent(tabbedComp);
 		workbenchPane.setTitleAt(workbenchPane.indexOfComponent(tabbedComp), tabbedComp.getName());
 	}
-
+	
 	/**
 	 * 弹出一个模态对话框
 	 * 
@@ -233,7 +237,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 
 	@Override
 	public void onDataChanged(EventObject<?> event) {
-		
+
 		// 判断当前的数据更新事件源
 		if (event.getSource() == discovery.getDataProvider()) {
 			discovery.refresh();
@@ -251,13 +255,17 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 	@SuppressWarnings("rawtypes")
 	public void menuItemClicked(EventObject<Menubar.Action> event) {
 		Object actionObj = event.getPayload().getAction();
+		
+		if (actionObj == null) {
+			throw new IllegalArgumentException("action should be not null");
+		}
 
 		switch (event.getPayload().getType()) {
 		case COMMAND:
 
-			if (actionObj != null && Runnable.class.isAssignableFrom(actionObj.getClass())) {
+			if (Runnable.class.isAssignableFrom(actionObj.getClass())) {
 				_asyncService.execute((Runnable) actionObj);
-			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
+			} else if (Class.class.isAssignableFrom(actionObj.getClass())) {
 
 				try {
 					_asyncService.execute((Runnable) ((Class) actionObj).newInstance());
@@ -267,23 +275,37 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 			}
 			break;
 		case WORKBENCH:
+			
+			JComponent workbenchPane = null;
+			// 查找缓存的工作台面板
+			if (_workbenchMap.containsKey(actionObj.toString())) {
+				workbenchPane = _workbenchMap.get(actionObj.toString());
+			} else {
+				
+				if (JComponent.class.isAssignableFrom(actionObj.getClass())) {
+					workbenchPane = (JComponent) actionObj;
+				} else if (Class.class.isAssignableFrom(actionObj.getClass())
+						&& JComponent.class.isAssignableFrom((Class<?>) actionObj)) {
 
-			if (actionObj != null && JComponent.class.isAssignableFrom(actionObj.getClass())) {
-				appendToWorkbench((JComponent) actionObj);
-			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
-
-				try {
-					appendToWorkbench((JComponent) ((Class) actionObj).newInstance());
-				} catch (InstantiationException e) {
-				} catch (IllegalAccessException e) {
+					try {
+						workbenchPane = (JComponent) ((Class) actionObj).newInstance();
+					} catch (Throwable e) {
+					}
 				}
+				
+				_workbenchMap.put(actionObj.toString(), workbenchPane);
 			}
+			
+			if (workbenchPane != null) {
+				appendToWorkbench(workbenchPane);
+			}
+			
 			break;
 		case DIALOG:
 
-			if (actionObj != null && JComponent.class.isAssignableFrom(actionObj.getClass())) {
+			if (JComponent.class.isAssignableFrom(actionObj.getClass())) {
 				popupModalDialog((JComponent) actionObj);
-			} else if (actionObj != null && Class.class.isAssignableFrom(actionObj.getClass())) {
+			} else if (Class.class.isAssignableFrom(actionObj.getClass())) {
 
 				try {
 					popupModalDialog((JComponent) ((Class) actionObj).newInstance());
