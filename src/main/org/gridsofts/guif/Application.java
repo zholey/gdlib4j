@@ -124,7 +124,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 
 		// authentication
 		if (authenticator != null) {
-			new LoginDialog(authenticator, configure).setVisible(true);
+			new LoginDialog(authenticator, configure, getIconImage()).setVisible(true);
 
 			try {
 				logger.debug("需要验证用户身份，等待登录完成 ...");

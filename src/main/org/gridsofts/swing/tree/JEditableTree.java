@@ -42,7 +42,7 @@ public class JEditableTree extends AbstractTree implements TreeModelListener {
 
 		if (selectedMutableNode != null && selectedTreeNode != null) {
 			
-			selectedTreeNode.setNodeName(selectedMutableNode.getUserObject().toString());
+			selectedTreeNode.setName(selectedMutableNode.getUserObject().toString());
 			selectedMutableNode.setUserObject(selectedTreeNode);
 
 			evtDispatcher.dispatchEvent("onTreeNodeChanged", new EventObject<ITreeNode>(this, selectedTreeNode));

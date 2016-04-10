@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,7 +18,9 @@ import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -113,6 +116,56 @@ public class BeanUtil {
 
 	public static String getSetterMethodName(String fieldName) {
 		return "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+	}
+
+	/**
+	 * 在给定的类中查找所有具有某种标注类型的属性
+	 * 
+	 * @param beanClass
+	 * @param annotationClass
+	 * @return
+	 */
+	public static Field[] getFieldByAnnotation(Class<?> beanClass, Class<? extends Annotation> annotationClass) {
+		List<Field> fldList = new ArrayList<Field>();
+
+		if (beanClass != null) {
+			Field[] fldAry = getDeclaredFields(beanClass, true);
+			for (int i = 0; fldAry != null && i < fldAry.length; i++) {
+
+				if (fldAry[i].isAnnotationPresent(annotationClass)) {
+					fldList.add(fldAry[i]);
+				}
+			}
+		}
+
+		return fldList.toArray(new Field[0]);
+	}
+
+	/**
+	 * 在给定的类中查找所有属性，可以根据需要向上查找所有的父类
+	 * 
+	 * @param beanClass
+	 * @param includeSuperClass
+	 * @return
+	 */
+	public static Field[] getDeclaredFields(Class<?> beanClass, boolean includeSuperClass) {
+		List<Field> fldList = new ArrayList<Field>();
+
+		if (beanClass != null) {
+			Field[] fldAry = beanClass.getDeclaredFields();
+			for (int i = 0; fldAry != null && i < fldAry.length; i++) {
+				fldList.add(fldAry[i]);
+			}
+
+			if (includeSuperClass && beanClass.getSuperclass() != null) {
+				fldAry = getDeclaredFields(beanClass.getSuperclass(), includeSuperClass);
+				for (int i = 0; fldAry != null && i < fldAry.length; i++) {
+					fldList.add(fldAry[i]);
+				}
+			}
+		}
+
+		return fldList.toArray(new Field[0]);
 	}
 
 	/**

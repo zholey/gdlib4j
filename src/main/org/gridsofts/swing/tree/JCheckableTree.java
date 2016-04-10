@@ -14,7 +14,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.gridsofts.swing.treeClasses.DefaultCellRenderer;
-import org.gridsofts.swing.treeClasses.ICheckableNode;
+import org.gridsofts.swing.treeClasses.ICheckable;
 import org.gridsofts.swing.treeClasses.ITreeNode;
 
 /**
@@ -26,7 +26,7 @@ public class JCheckableTree extends AbstractTree {
 	public JCheckableTree() {
 		super();
 
-		setCellRenderer(new DefaultCellRenderer(ICheckableNode.class));
+		setCellRenderer(new DefaultCellRenderer(ICheckable.class));
 
 		// 注册监听
 		addMouseListener(new TreeMouseListener());
@@ -55,9 +55,10 @@ public class JCheckableTree extends AbstractTree {
 		}
 
 		if (mutableNode != null) {
-			ICheckableNode treeNode = (ICheckableNode) mutableNode.getUserObject();
+			ITreeNode treeNode = (ITreeNode) mutableNode.getUserObject();
 
-			if (mutableNode.isLeaf() && treeNode.isSelected()) {
+			if (mutableNode.isLeaf() && ICheckable.class.isAssignableFrom(treeNode.getClass())
+					&& ((ICheckable) treeNode).isSelected()) {
 				checkedList.add(treeNode);
 			}
 
@@ -82,7 +83,7 @@ public class JCheckableTree extends AbstractTree {
 	 *            递归搜索方向（0:双方向搜索； 1:只搜索子级节点； -1:只搜索父级节点）
 	 */
 	private void _setTreeNodeSelected(DefaultMutableTreeNode mutableNode, boolean isSelected, int direction) {
-		ICheckableNode treeNode = (ICheckableNode) mutableNode.getUserObject();
+		ICheckable treeNode = (ICheckable) mutableNode.getUserObject();
 		treeNode.setSelected(isSelected);
 
 		if (treeNode.isSelected()) {
@@ -91,7 +92,7 @@ public class JCheckableTree extends AbstractTree {
 			if (direction >= 0 && mutableNode.getChildCount() > 0) {
 				for (int i = 0; i < mutableNode.getChildCount(); i++) {
 					DefaultMutableTreeNode childMutableNode = (DefaultMutableTreeNode) mutableNode.getChildAt(i);
-					ICheckableNode childTreeNode = (ICheckableNode) childMutableNode.getUserObject();
+					ICheckable childTreeNode = (ICheckable) childMutableNode.getUserObject();
 
 					if (!childTreeNode.isSelected()) {
 						_setTreeNodeSelected(childMutableNode, true, 1);
@@ -102,7 +103,7 @@ public class JCheckableTree extends AbstractTree {
 			// 向上检查，如果父结点的所有子结点都被选中，那么将父结点也选中
 			SelectUp: if (direction <= 0 && mutableNode.getParent() != null) {
 				DefaultMutableTreeNode parentMutableNode = (DefaultMutableTreeNode) mutableNode.getParent();
-				ICheckableNode parentTreeNode = (ICheckableNode) parentMutableNode.getUserObject();
+				ICheckable parentTreeNode = (ICheckable) parentMutableNode.getUserObject();
 
 				// 如果当前节点的父节点已经选中，则立即跳出
 				if (parentTreeNode.isSelected()) {
@@ -113,7 +114,7 @@ public class JCheckableTree extends AbstractTree {
 				boolean isAllSelected = true;
 				for (int i = 0; i < parentMutableNode.getChildCount(); i++) {
 					DefaultMutableTreeNode childMutableNode = (DefaultMutableTreeNode) parentMutableNode.getChildAt(i);
-					ICheckableNode childTreeNode = (ICheckableNode) childMutableNode.getUserObject();
+					ICheckable childTreeNode = (ICheckable) childMutableNode.getUserObject();
 
 					if (!childTreeNode.isSelected()) {
 						isAllSelected = false;
@@ -134,7 +135,7 @@ public class JCheckableTree extends AbstractTree {
 				// 从上向下取消的时候
 				for (int i = 0; i < mutableNode.getChildCount(); ++i) {
 					DefaultMutableTreeNode childMutableNode = (DefaultMutableTreeNode) mutableNode.getChildAt(i);
-					ICheckableNode childTreeNode = (ICheckableNode) childMutableNode.getUserObject();
+					ICheckable childTreeNode = (ICheckable) childMutableNode.getUserObject();
 
 					if (childTreeNode.isSelected()) {
 						_setTreeNodeSelected(childMutableNode, false, 1);
@@ -175,8 +176,8 @@ public class JCheckableTree extends AbstractTree {
 
 				DefaultMutableTreeNode mutableNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
 
-				if (mutableNode.getUserObject() instanceof ICheckableNode) {
-					ICheckableNode treeNode = (ICheckableNode) mutableNode.getUserObject();
+				if (mutableNode.getUserObject() instanceof ICheckable) {
+					ICheckable treeNode = (ICheckable) mutableNode.getUserObject();
 					_setTreeNodeSelected(mutableNode, !treeNode.isSelected(), 0);
 
 					JCheckableTree.this.updateUI();

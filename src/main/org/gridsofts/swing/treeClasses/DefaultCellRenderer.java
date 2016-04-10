@@ -55,7 +55,7 @@ public class DefaultCellRenderer extends JPanel implements TreeCellRenderer {
 		add(label, BorderLayout.CENTER);
 
 		// checkbox
-		if (ICheckableNode.class.isAssignableFrom(userObjectClass)) {
+		if (ICheckable.class.isAssignableFrom(userObjectClass)) {
 			chkbox = new JCheckBox();
 			chkbox.setOpaque(false);
 
@@ -90,8 +90,8 @@ public class DefaultCellRenderer extends JPanel implements TreeCellRenderer {
 					}
 				}
 
-				if (chkbox != null && ICheckableNode.class.isAssignableFrom(mutableNode.getUserObject().getClass())) {
-					ICheckableNode treeNode = (ICheckableNode) mutableNode.getUserObject();
+				if (chkbox != null && ICheckable.class.isAssignableFrom(mutableNode.getUserObject().getClass())) {
+					ICheckable treeNode = (ICheckable) mutableNode.getUserObject();
 
 					chkbox.setSelected(treeNode.isSelected());
 				}

@@ -5,21 +5,21 @@
  */
 package org.gridsofts.guif.itf;
 
-import java.util.List;
+import org.gridsofts.swing.treeClasses.ITreeNode;
 
 /**
  * 提供数据的抽象服务接口
  * 
  * @author lei
  */
-public interface IDataProvider<T> {
+public interface IDataProvider<T extends ITreeNode> {
 
 	/**
 	 * 获取数据
 	 * 
 	 * @return
 	 */
-	public List<? extends T> listData();
+	public T getRootNode();
 
 	/**
 	 * 注册数据更新事件监听

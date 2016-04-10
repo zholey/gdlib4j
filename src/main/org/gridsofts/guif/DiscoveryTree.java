@@ -10,7 +10,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,12 +19,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import org.gridsofts.guif.itf.IDataProvider;
-import org.gridsofts.guif.tree.DiscoveryNode;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.border.ScatterLineBorder;
 import org.gridsofts.swing.tree.JCheckableTree;
-import org.gridsofts.swing.treeClasses.ITreeListener;
 import org.gridsofts.swing.treeClasses.ITreeNode;
+import org.gridsofts.swing.treeClasses.ITreeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +38,6 @@ public class DiscoveryTree extends JPanel {
 
 	private JToolBar toolbar;
 	private JCheckableTree tree;
-
-	private DiscoveryNode treeRootNode;
 
 	// 工具栏按钮
 	private JButton btnRefresh, btnExpandAll, btnCollapseAll;
@@ -86,8 +82,6 @@ public class DiscoveryTree extends JPanel {
 		btnCollapseAll.addActionListener(new BtnCollapseAllAction());
 
 		// 树
-		treeRootNode = new DiscoveryNode("[ROOT]");
-
 		tree = new JCheckableTree();
 		tree.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
 
@@ -173,21 +167,10 @@ public class DiscoveryTree extends JPanel {
 
 			logger.debug("刷新树节点 ...");
 
-			treeRootNode.removeAll();
-			treeRootNode.setSelected(false);
-			tree.updateUI();
-
-			List<? extends ITreeNode> treeNodes = dataProvider.listData();
-			if (treeNodes != null && treeNodes.size() > 0) {
-				
-				for (ITreeNode nodeObj : treeNodes) {
-					treeRootNode.add(nodeObj);
-				}
-				
-				tree.setRootTreeNode(treeRootNode);
-			}
-
+			tree.setRootTreeNode(dataProvider.getRootNode());
 			btnExpandAllAction.actionPerformed(null);
+
+			tree.updateUI();
 		}
 	}
 }

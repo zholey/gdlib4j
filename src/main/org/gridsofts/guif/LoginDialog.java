@@ -8,6 +8,7 @@ package org.gridsofts.guif;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,10 +47,11 @@ public class LoginDialog extends JFrame {
 
 	private JButton btnOk;
 
-	public LoginDialog(IAuthentication authenticator, Configure configure) {
+	public LoginDialog(IAuthentication authenticator, Configure configure, Image iconImg) {
 		this.authenticator = authenticator;
 
 		setTitle(configure.getProperty("guif.login.title", "\u7CFB\u7EDF\u767B\u5F55"));
+		setIconImage(iconImg);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

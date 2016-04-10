@@ -5,28 +5,24 @@
  */
 package org.gridsofts.swing.treeClasses;
 
-import java.util.List;
-
 /**
- * 树形节点模型
+ * 可勾选的节点抽象接口
  * 
  * @author lei
  */
-public interface ITreeNode {
+public interface ICheckable {
 	
 	/**
-	 * 设置节点名称
+	 * 指示当前节点是否已选中
 	 * 
 	 * @return
 	 */
-	public void setName(String name);
+	public boolean isSelected();
 
-	public void add(ITreeNode child);
-
-	public void remove(ITreeNode child);
-
-	public void removeAll();
-
-	public List<?> getChildren();
-
+	/**
+	 * 设置当前节点的选中状态
+	 * 
+	 * @param value
+	 */
+	public void setSelected(boolean value);
 }

@@ -256,8 +256,10 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 		DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(root);
 
 		if (root.getChildren() != null && root.getChildren().size() > 0) {
-			for (ITreeNode child : root.getChildren()) {
-				treeNode.add(recursionBuildMutableTreeNode(child));
+			List<?> children = root.getChildren();
+			
+			for (int i = 0; i < children.size(); i++) {
+				treeNode.add(recursionBuildMutableTreeNode((ITreeNode) children.get(i)));
 			}
 		}
 
