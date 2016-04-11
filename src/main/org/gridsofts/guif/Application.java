@@ -7,6 +7,7 @@ package org.gridsofts.guif;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -67,6 +68,8 @@ public class Application extends JFrame implements IMenuListener {
 
 	private ITreeListener discoveryListener = null;
 
+	private Image bannerImg = null;
+
 	/******/
 	private final Session session = new Session();
 
@@ -78,6 +81,10 @@ public class Application extends JFrame implements IMenuListener {
 		this.configure = configure;
 
 		_initComponents();
+	}
+
+	public void setLoginBannerImage(Image bannerImg) {
+		this.bannerImg = bannerImg;
 	}
 
 	public Application setAuthenticator(IAuthentication authenticator) {
@@ -122,7 +129,7 @@ public class Application extends JFrame implements IMenuListener {
 
 		// authentication
 		if (authenticator != null) {
-			new LoginDialog(authenticator, configure, getIconImage()).setVisible(true);
+			new LoginDialog(authenticator, configure, getIconImage(), bannerImg).setVisible(true);
 
 			try {
 				logger.debug("需要验证用户身份，等待登录完成 ...");
@@ -218,7 +225,7 @@ public class Application extends JFrame implements IMenuListener {
 		workbenchPane.setSelectedComponent(tabbedComp);
 		workbenchPane.setTitleAt(workbenchPane.indexOfComponent(tabbedComp), tabbedComp.getName());
 	}
-	
+
 	/**
 	 * 弹出一个模态对话框
 	 * 
@@ -232,7 +239,6 @@ public class Application extends JFrame implements IMenuListener {
 		dialog.setVisible(true);
 	}
 
-
 	/*
 	 * 用户点击菜单项
 	 * 
@@ -244,7 +250,7 @@ public class Application extends JFrame implements IMenuListener {
 	@SuppressWarnings("rawtypes")
 	public void menuItemClicked(EventObject<Menubar.Action> event) {
 		Object actionObj = event.getPayload().getAction();
-		
+
 		if (actionObj == null) {
 			throw new IllegalArgumentException("action should be not null");
 		}
@@ -264,13 +270,13 @@ public class Application extends JFrame implements IMenuListener {
 			}
 			break;
 		case WORKBENCH:
-			
+
 			JComponent workbenchPane = null;
 			// 查找缓存的工作台面板
 			if (_workbenchMap.containsKey(actionObj.toString())) {
 				workbenchPane = _workbenchMap.get(actionObj.toString());
 			} else {
-				
+
 				if (JComponent.class.isAssignableFrom(actionObj.getClass())) {
 					workbenchPane = (JComponent) actionObj;
 				} else if (Class.class.isAssignableFrom(actionObj.getClass())
@@ -281,14 +287,14 @@ public class Application extends JFrame implements IMenuListener {
 					} catch (Throwable e) {
 					}
 				}
-				
+
 				_workbenchMap.put(actionObj.toString(), workbenchPane);
 			}
-			
+
 			if (workbenchPane != null) {
 				appendToWorkbench(workbenchPane);
 			}
-			
+
 			break;
 		case DIALOG:
 

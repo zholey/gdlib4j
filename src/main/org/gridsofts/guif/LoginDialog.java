@@ -28,7 +28,6 @@ import javax.swing.JTextField;
 
 import org.gridsofts.guif.components.Copyright;
 import org.gridsofts.guif.itf.IAuthentication;
-import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.JForm;
 import org.gridsofts.util.Configure;
 
@@ -47,7 +46,7 @@ public class LoginDialog extends JFrame {
 
 	private JButton btnOk;
 
-	public LoginDialog(IAuthentication authenticator, Configure configure, Image iconImg) {
+	public LoginDialog(IAuthentication authenticator, Configure configure, Image iconImg, Image bannerImg) {
 		this.authenticator = authenticator;
 
 		setTitle(configure.getProperty("guif.login.title", "\u7CFB\u7EDF\u767B\u5F55"));
@@ -56,9 +55,10 @@ public class LoginDialog extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// banner image
-		JLabel bannerIcon = new JLabel(new ImageIcon(Resources.Image.get("banner.png")));
-		bannerIcon.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-		getContentPane().add(bannerIcon, BorderLayout.NORTH);
+		if (bannerImg != null) {
+			JLabel bannerIcon = new JLabel(new ImageIcon(bannerImg));
+			getContentPane().add(bannerIcon, BorderLayout.NORTH);
+		}
 
 		//
 		userId = new JTextField();
