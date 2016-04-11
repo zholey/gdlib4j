@@ -18,12 +18,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
+import org.gridsofts.guif.itf.IDataChangedListener;
 import org.gridsofts.guif.itf.IDataProvider;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.border.ScatterLineBorder;
 import org.gridsofts.swing.tree.JCheckableTree;
-import org.gridsofts.swing.treeClasses.ITreeNode;
 import org.gridsofts.swing.treeClasses.ITreeListener;
+import org.gridsofts.swing.treeClasses.ITreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author lei
  */
-public class DiscoveryTree extends JPanel {
+public class DiscoveryTree extends JPanel implements IDataChangedListener {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(DiscoveryTree.class);
 
@@ -104,6 +105,7 @@ public class DiscoveryTree extends JPanel {
 	 */
 	public void setDataProvider(IDataProvider<ITreeNode> dataProvider) {
 		this.dataProvider = dataProvider;
+		this.dataProvider.addEventListener(this);
 	}
 
 	/**
@@ -124,10 +126,12 @@ public class DiscoveryTree extends JPanel {
 		return tree.getSelectedTreeNode();
 	}
 
+	
 	/**
 	 * 立即刷新树
 	 */
-	public void refresh() {
+	@Override
+	public void onDataChanged() {
 		btnRefreshAction.actionPerformed(null);
 	}
 

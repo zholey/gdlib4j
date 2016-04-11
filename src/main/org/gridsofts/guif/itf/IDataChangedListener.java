@@ -18,8 +18,6 @@ public interface IDataChangedListener extends EventListener {
 
 	/**
 	 * 数据更新通知
-	 * 
-	 * @param event
 	 */
-	public void onDataChanged(EventObject<?> event);
+	public void onDataChanged();
 }

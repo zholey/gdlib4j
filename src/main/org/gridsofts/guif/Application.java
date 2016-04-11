@@ -25,7 +25,6 @@ import javax.swing.JSplitPane;
 
 import org.gridsofts.guif.Menubar.Action;
 import org.gridsofts.guif.itf.IAuthentication;
-import org.gridsofts.guif.itf.IDataChangedListener;
 import org.gridsofts.guif.itf.IDataProvider;
 import org.gridsofts.guif.itf.IMenuListener;
 import org.gridsofts.guif.itf.IWindowListener;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author lei
  */
-public class Application extends JFrame implements IMenuListener, IDataChangedListener {
+public class Application extends JFrame implements IMenuListener {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(Application.class);
 
@@ -100,7 +99,6 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 
 		if (dataProvider != null) {
 			discovery.setDataProvider(dataProvider);
-			dataProvider.addEventListener(this);
 		}
 		return this;
 	}
@@ -164,7 +162,7 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 		}
 
 		// init data
-		discovery.refresh();
+		discovery.onDataChanged();
 	}
 
 	/**
@@ -196,7 +194,6 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 
 		// 左侧树面板
 		splitPane.setLeftComponent(discovery = new DiscoveryTree());
-		discovery.refresh();
 
 		// 右侧主容器
 		splitPane.setRightComponent(workbenchPane = new JCloseableTabbedPane());
@@ -235,14 +232,6 @@ public class Application extends JFrame implements IMenuListener, IDataChangedLi
 		dialog.setVisible(true);
 	}
 
-	@Override
-	public void onDataChanged(EventObject<?> event) {
-
-		// 判断当前的数据更新事件源
-		if (event.getSource() == discovery.getDataProvider()) {
-			discovery.refresh();
-		}
-	}
 
 	/*
 	 * 用户点击菜单项
