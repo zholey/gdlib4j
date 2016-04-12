@@ -5,9 +5,12 @@
  */
 package org.gridsofts.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,23 +26,55 @@ import java.io.Serializable;
  */
 public class FileIO implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
+	/**
+	 * 将文件内容读入至内存
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static byte[] read(File file) {
+
+		if (file != null && file.exists() && file.isFile()) {
+
+			ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+			try {
+				BufferedInputStream bufInstream = new BufferedInputStream(new FileInputStream(file));
+
+				byte[] readBuf = new byte[4096];
+				int readLen = 0;
+
+				while ((readLen = bufInstream.read(readBuf)) > 0) {
+					byteOutStream.write(readBuf, 0, readLen);
+				}
+
+				byteOutStream.flush();
+				bufInstream.close();
+
+				return byteOutStream.toByteArray();
+			} catch (Throwable e) {
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * 删除文件或文件夹
 	 * 
 	 * @param file
 	 */
 	public static void delete(File file) {
-		
+
 		if (file != null && file.exists()) {
-			
+
 			if (file.isDirectory()) {
-				
+
 				for (File f : file.listFiles()) {
 					delete(f);
 				}
 			}
-				
+
 			file.delete();
 		}
 	}
