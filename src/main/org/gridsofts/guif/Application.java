@@ -55,7 +55,6 @@ public class Application extends JFrame implements IMenuListener {
 
 	private Statusbar statusbar;
 
-	private JSplitPane splitPane;
 	private JCloseableTabbedPane workbenchPane;
 	private Map<String, JComponent> _workbenchMap;
 
@@ -66,6 +65,7 @@ public class Application extends JFrame implements IMenuListener {
 	private IAuthentication authenticator = null;
 	private IWindowListener windowListener = null;
 
+	private IDataProvider<ITreeNode> discoveryProvider = null;
 	private ITreeListener discoveryListener = null;
 
 	private Image bannerImg = null;
@@ -102,11 +102,8 @@ public class Application extends JFrame implements IMenuListener {
 		return this;
 	}
 
-	public Application setDiscoveryProvider(IDataProvider<ITreeNode> dataProvider) {
-
-		if (dataProvider != null) {
-			discovery.setDataProvider(dataProvider);
-		}
+	public Application setDiscoveryProvider(IDataProvider<ITreeNode> provider) {
+		discoveryProvider = provider;
 		return this;
 	}
 
@@ -126,6 +123,25 @@ public class Application extends JFrame implements IMenuListener {
 	 * 启动应用程序
 	 */
 	public void rockroll() {
+
+		// workbench
+		if (discoveryProvider != null) {
+			
+			// 分割容器
+			JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+			splitPane.setBorder(BorderFactory.createEmptyBorder());
+			getContentPane().add(splitPane, BorderLayout.CENTER);
+
+			// 左侧树面板
+			splitPane.setLeftComponent(discovery = new DiscoveryTree());
+			discovery.setDataProvider(discoveryProvider);
+
+			// 右侧主容器
+			splitPane.setRightComponent(workbenchPane);
+
+		} else {
+			getContentPane().add(workbenchPane, BorderLayout.CENTER);
+		}
 
 		// authentication
 		if (authenticator != null) {
@@ -194,19 +210,11 @@ public class Application extends JFrame implements IMenuListener {
 		setJMenuBar(menubar = Menubar.getInstance());
 		menubar.addMenuListener(this);
 
-		// 分割容器
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		splitPane.setBorder(BorderFactory.createEmptyBorder());
-		getContentPane().add(splitPane, BorderLayout.CENTER);
-
-		// 左侧树面板
-		splitPane.setLeftComponent(discovery = new DiscoveryTree());
-
-		// 右侧主容器
-		splitPane.setRightComponent(workbenchPane = new JCloseableTabbedPane());
-
 		// 状态栏
 		getContentPane().add(statusbar = Statusbar.getInstance(), BorderLayout.SOUTH);
+
+		// workbench
+		workbenchPane = new JCloseableTabbedPane();
 	}
 
 	/**
