@@ -49,10 +49,10 @@ public class LoginDialog extends JFrame {
 	public LoginDialog(IAuthentication authenticator, Configure configure, Image iconImg, Image bannerImg) {
 		this.authenticator = authenticator;
 
-		setTitle(configure.getProperty("guif.login.title", "\u7CFB\u7EDF\u767B\u5F55"));
-		setIconImage(iconImg);
 		setResizable(false);
+		setIconImage(iconImg);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle(configure.getProperty("guif.login.title", "\u7CFB\u7EDF\u767B\u5F55"));
 
 		// banner image
 		if (bannerImg != null) {
@@ -66,6 +66,7 @@ public class LoginDialog extends JFrame {
 		btnOk = new JButton("登录");
 
 		JForm form = new JForm(7, 10);
+		form.setPreferredSize(new Dimension(350, 150));
 		form.setAutoCreateContainerGaps(true);
 		form.setBorder(BorderFactory.createEmptyBorder(30, 50, 20, 50));
 		form.addFormItem("用户名", userId);
