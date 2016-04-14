@@ -6,6 +6,7 @@
 package org.gridsofts.guif;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -17,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -56,7 +56,7 @@ public class Application extends JFrame implements IMenuListener {
 	private Statusbar statusbar;
 
 	private JCloseableTabbedPane workbenchPane;
-	private Map<String, JComponent> _workbenchMap;
+	private Map<String, Component> _workbenchMap;
 
 	private DiscoveryTree discovery;
 
@@ -76,7 +76,7 @@ public class Application extends JFrame implements IMenuListener {
 	public Application(Configure configure) {
 		_instance = this;
 		_asyncService = Executors.newSingleThreadExecutor();
-		_workbenchMap = new HashMap<String, JComponent>();
+		_workbenchMap = new HashMap<String, Component>();
 
 		this.configure = configure;
 
@@ -222,7 +222,7 @@ public class Application extends JFrame implements IMenuListener {
 	 * 
 	 * @param tabbedComp
 	 */
-	protected void appendToWorkbench(JComponent tabbedComp) {
+	protected void appendToWorkbench(Component tabbedComp) {
 
 		int tabIndex = workbenchPane.indexOfComponent(tabbedComp);
 		if (tabIndex < 0) {
@@ -239,7 +239,12 @@ public class Application extends JFrame implements IMenuListener {
 	 * 
 	 * @param dialogContentComp
 	 */
-	protected void popupModalDialog(JComponent dialogContentComp) {
+	protected void popupModalDialog(Component dialogContentComp) {
+		
+		if (JDialog.class.isAssignableFrom(dialogContentComp.getClass())) {
+			((JDialog) dialogContentComp).setVisible(true);
+		}
+		
 		JDialog dialog = new JDialog(_instance, dialogContentComp.getName(), true);
 		dialog.add(dialogContentComp);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -279,19 +284,19 @@ public class Application extends JFrame implements IMenuListener {
 			break;
 		case WORKBENCH:
 
-			JComponent workbenchPane = null;
+			Component workbenchPane = null;
 			// 查找缓存的工作台面板
 			if (_workbenchMap.containsKey(actionObj.toString())) {
 				workbenchPane = _workbenchMap.get(actionObj.toString());
 			} else {
 
-				if (JComponent.class.isAssignableFrom(actionObj.getClass())) {
-					workbenchPane = (JComponent) actionObj;
+				if (Component.class.isAssignableFrom(actionObj.getClass())) {
+					workbenchPane = (Component) actionObj;
 				} else if (Class.class.isAssignableFrom(actionObj.getClass())
-						&& JComponent.class.isAssignableFrom((Class<?>) actionObj)) {
+						&& Component.class.isAssignableFrom((Class<?>) actionObj)) {
 
 					try {
-						workbenchPane = (JComponent) ((Class) actionObj).newInstance();
+						workbenchPane = (Component) ((Class) actionObj).newInstance();
 					} catch (Throwable e) {
 					}
 				}
@@ -306,12 +311,12 @@ public class Application extends JFrame implements IMenuListener {
 			break;
 		case DIALOG:
 
-			if (JComponent.class.isAssignableFrom(actionObj.getClass())) {
-				popupModalDialog((JComponent) actionObj);
+			if (Component.class.isAssignableFrom(actionObj.getClass())) {
+				popupModalDialog((Component) actionObj);
 			} else if (Class.class.isAssignableFrom(actionObj.getClass())) {
 
 				try {
-					popupModalDialog((JComponent) ((Class) actionObj).newInstance());
+					popupModalDialog((Component) ((Class) actionObj).newInstance());
 				} catch (InstantiationException e) {
 				} catch (IllegalAccessException e) {
 				}

@@ -5,12 +5,12 @@
  */
 package org.gridsofts.guif;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -41,7 +41,7 @@ public class Menubar extends JMenuBar {
 	private Map<String, JMenu> menuNameMap = new HashMap<String, JMenu>();
 
 	private Menubar() {
-		evtDispatcher = new EventDispatcher<IMenuListener, EventObject<Action>>();
+		evtDispatcher = new EventDispatcher<>();
 	}
 
 	public JMenuItem addMenuItem(String menuName, String itemName, Action action) {
@@ -127,16 +127,16 @@ public class Menubar extends JMenuBar {
 				throw new IllegalArgumentException("if type == Type.COMMAND, then action should be a Runnable");
 			}
 
-			if (Type.WORKBENCH == type && !JComponent.class.isAssignableFrom(action.getClass())
+			if (Type.WORKBENCH == type && !Component.class.isAssignableFrom(action.getClass())
 					&& (Class.class.isAssignableFrom(action.getClass())
-							&& !JComponent.class.isAssignableFrom((Class<?>) action))) {
-				throw new IllegalArgumentException("if type == Type.WORKBENCH, then action should be a JComponent");
+							&& !Component.class.isAssignableFrom((Class<?>) action))) {
+				throw new IllegalArgumentException("if type == Type.WORKBENCH, then action should be a Component");
 			}
 
-			if (Type.DIALOG == type && !JComponent.class.isAssignableFrom(action.getClass())
+			if (Type.DIALOG == type && !Component.class.isAssignableFrom(action.getClass())
 					&& (Class.class.isAssignableFrom(action.getClass())
-							&& !JComponent.class.isAssignableFrom((Class<?>) action))) {
-				throw new IllegalArgumentException("if type == Type.DIALOG, then action should be a JComponent");
+							&& !Component.class.isAssignableFrom((Class<?>) action))) {
+				throw new IllegalArgumentException("if type == Type.DIALOG, then action should be a Component");
 			}
 		}
 

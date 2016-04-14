@@ -80,7 +80,7 @@ public class Kalendar extends JComponent {
 
 		underLineDates = new HashSet<Date>();
 
-		kalendarES = new EventDispatcher<KalendarListener, KalendarEvent>();
+		kalendarES = new EventDispatcher<>();
 
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(new Color(0x1b376c)));

@@ -37,7 +37,7 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	public AbstractTree() {
 		super(new DefaultTreeModel(new DefaultMutableTreeNode("[ROOT]")));
 
-		evtDispatcher = new EventDispatcher<ITreeListener, EventObject<ITreeNode>>();
+		evtDispatcher = new EventDispatcher<>();
 
 		setRowHeight(20);
 

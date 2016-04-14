@@ -28,8 +28,11 @@ import org.gridsofts.swing.wizardClasses.WizardEvent;
 import org.gridsofts.swing.wizardClasses.WizardStep;
 import org.gridsofts.util.EventDispatcher;
 
-
-
+/**
+ * 向导面板
+ * 
+ * @author lei
+ */
 public abstract class JWizardDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 
@@ -55,7 +58,7 @@ public abstract class JWizardDialog extends JDialog {
 		super(owner, title, true);
 		this.title = title;
 
-		eventDispatcher = new EventDispatcher<IWizardListener, WizardEvent>();
+		eventDispatcher = new EventDispatcher<>();
 
 		history = new ArrayList<WizardStep>();
 

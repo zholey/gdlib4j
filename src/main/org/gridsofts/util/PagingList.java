@@ -51,7 +51,7 @@ public class PagingList<E> extends ArrayList<E> {
 	 * @param pageCapacity
 	 */
 	public PagingList(int pageCapacity) {
-		dispatcher = new EventDispatcher<PagingListener, PagingEvent>();
+		dispatcher = new EventDispatcher<>();
 
 		setPageCapacity(pageCapacity);
 	}

@@ -69,7 +69,7 @@ public class JDateField extends JPanel {
 	public JDateField(DateTime defaultValue, String formatStr) {
 		super(new FlowLayout(FlowLayout.LEFT));
 		
-		dispatcher = new EventDispatcher<DateFieldListener, DateFieldEvent>();
+		dispatcher = new EventDispatcher<>();
 
 		this.selectedDate = defaultValue == null ? DateTime.getCurrentTime() : defaultValue;
 		this.formatStr = formatStr;
