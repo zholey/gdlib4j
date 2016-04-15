@@ -210,7 +210,7 @@ public abstract class JdbcSupportDAO extends Transaction implements IDao {
 	public synchronized <T> List<T> list(Class<T> t, int start, int limit, String condition,
 			Object... param) throws DAOException {
 
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 
 		PreparedStatement stat = null;
 		PResultSet rs = null;
@@ -300,8 +300,8 @@ public abstract class JdbcSupportDAO extends Transaction implements IDao {
 			String tableName = getTableName(metaInfo.tableMetaInfo);
 
 			try {
-				List<Object> values = new ArrayList<Object>();
-				List<String> keyColumnNames = new ArrayList<String>();
+				List<Object> values = new ArrayList<>();
+				List<String> keyColumnNames = new ArrayList<>();
 
 				// 测试当前环境是否支持批量插入操作
 				if (dialect.isBatchInsertSupport()) {
@@ -381,7 +381,7 @@ public abstract class JdbcSupportDAO extends Transaction implements IDao {
 			throw new NullPointerException();
 		}
 
-		List<Object> priKeyValue = new ArrayList<Object>();
+		List<Object> priKeyValue = new ArrayList<>();
 
 		T resultObject = bean;
 		PreparedStatement statement = null;
@@ -401,8 +401,8 @@ public abstract class JdbcSupportDAO extends Transaction implements IDao {
 			String tableName = getTableName(metaInfo.tableMetaInfo);
 
 			try {
-				List<Object> values = new ArrayList<Object>();
-				List<String> keyColumnNames = new ArrayList<String>();
+				List<Object> values = new ArrayList<>();
+				List<String> keyColumnNames = new ArrayList<>();
 
 				String insertSQL = dialect.getInsertSQL(values, keyColumnNames, metaInfo,
 						tableName, bean);
@@ -483,7 +483,7 @@ public abstract class JdbcSupportDAO extends Transaction implements IDao {
 
 			StringBuffer uptParamSql = new StringBuffer("update "
 					+ getTableName(metaInfo.tableMetaInfo) + " set ");
-			List<Object> colValues = new ArrayList<Object>();
+			List<Object> colValues = new ArrayList<>();
 
 			// 拼接SQL
 			for (int i = 0, count = fields.length; i < count; i++) {
@@ -563,7 +563,7 @@ public abstract class JdbcSupportDAO extends Transaction implements IDao {
 
 		// 判断主键列值是否为空
 		boolean keyNotNull = true;
-		List<Object> primaryValue = new ArrayList<Object>();
+		List<Object> primaryValue = new ArrayList<>();
 
 		for (Field key : metaInfo.primaryKeys) {
 			Object keyValue = BeanUtil.getFieldValue(bean, key.getName());
@@ -650,7 +650,7 @@ public abstract class JdbcSupportDAO extends Transaction implements IDao {
 			StringBuffer sql = new StringBuffer("delete from " + tableName);
 
 			StringBuffer delWhereSql = null;
-			List<Object> colValues = new ArrayList<Object>();
+			List<Object> colValues = new ArrayList<>();
 
 			for (Field key : metaInfo.primaryKeys) {
 				String colName = BeanUtil.getColumnName(key);

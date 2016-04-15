@@ -14,7 +14,7 @@ public final class MimeTypeFactory {
 	private final static Hashtable<String, String> mimeTypes;
 
 	static {
-		mimeTypes = new Hashtable<String, String>();
+		mimeTypes = new Hashtable<>();
 
 		mimeTypes.put("*", "application/octet-stream");
 		mimeTypes.put("323", "text/h323");

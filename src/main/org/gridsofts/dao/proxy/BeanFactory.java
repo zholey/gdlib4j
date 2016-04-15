@@ -111,7 +111,7 @@ public class BeanFactory {
 	 */
 	public static <T> List<T> getCloneBean(Class<T> t, Object... beans) throws DAOException {
 
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 
 		if (beans != null && beans.length > 0) {
 
@@ -195,7 +195,7 @@ public class BeanFactory {
 			// OneToMany
 			else if (otmAnnotation != null && !otmAnnotation.lazy()) {
 
-				List<Object> cloneList = new ArrayList<Object>();
+				List<Object> cloneList = new ArrayList<>();
 
 				List<?> list = null;
 
@@ -309,7 +309,7 @@ public class BeanFactory {
 		}
 
 		// 取值
-		List<Object> priValue = new ArrayList<Object>();
+		List<Object> priValue = new ArrayList<>();
 		for (String keyName : primaryKeys) {
 
 			Method priKeyGetter = null;
@@ -362,7 +362,7 @@ public class BeanFactory {
 		}
 
 		// 取值
-		List<Object> foreignValue = new ArrayList<Object>();
+		List<Object> foreignValue = new ArrayList<>();
 		for (String keyName : foreignKeys) {
 
 			Method foreKeyGetter = null;
@@ -443,8 +443,8 @@ public class BeanFactory {
 		}
 
 		// 取出OneToMany、ManyToOne标注
-		List<Field> otmFieldAry = new ArrayList<Field>();
-		List<Field> mtoFieldAry = new ArrayList<Field>();
+		List<Field> otmFieldAry = new ArrayList<>();
+		List<Field> mtoFieldAry = new ArrayList<>();
 
 		for (int i = 0, fieldCount = fields.length; i < fieldCount; i++) {
 			OneToMany otmAnnotation = fields[i].getAnnotation(OneToMany.class);

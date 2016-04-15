@@ -76,7 +76,7 @@ public class Application extends JFrame implements IMenuListener {
 	public Application(Configure configure) {
 		_instance = this;
 		_asyncService = Executors.newSingleThreadExecutor();
-		_workbenchMap = new HashMap<String, Component>();
+		_workbenchMap = new HashMap<>();
 
 		this.configure = configure;
 
@@ -138,6 +138,14 @@ public class Application extends JFrame implements IMenuListener {
 
 			// 右侧主容器
 			splitPane.setRightComponent(workbenchPane);
+			
+			// association listener
+			if (discoveryListener != null) {
+				discovery.addTreeListener(discoveryListener);
+			}
+
+			// init data
+			discovery.onDataChanged();
 
 		} else {
 			getContentPane().add(workbenchPane, BorderLayout.CENTER);
@@ -178,14 +186,6 @@ public class Application extends JFrame implements IMenuListener {
 
 		// show
 		setVisible(true);
-
-		// association listener
-		if (discoveryListener != null) {
-			discovery.addTreeListener(discoveryListener);
-		}
-
-		// init data
-		discovery.onDataChanged();
 	}
 
 	/**

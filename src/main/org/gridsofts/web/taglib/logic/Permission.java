@@ -30,7 +30,7 @@ public class Permission extends BodyTagSupport {
 	// 用于保存权限校验对象的缓存
 	private static final Map<String, IPermission> permissionObjCache;
 	static {
-		permissionObjCache = new HashMap<String, IPermission>();
+		permissionObjCache = new HashMap<>();
 	}
 
 	// 重定向代码

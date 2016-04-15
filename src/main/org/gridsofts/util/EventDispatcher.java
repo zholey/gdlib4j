@@ -17,7 +17,7 @@ public class EventDispatcher<L extends EventListener, E extends EventObject> imp
 	private ArrayList<L> listeners;
 
 	public EventDispatcher() {
-		listeners = new ArrayList<L>();
+		listeners = new ArrayList<>();
 	}
 
 	public synchronized void addEventListener(L listener) {

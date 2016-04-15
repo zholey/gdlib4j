@@ -65,7 +65,7 @@ public class MetaInfo implements Serializable {
 			throw new AnnotationException("未标注主键信息");
 		}
 
-		List<Field> primaryKey = new ArrayList<Field>();
+		List<Field> primaryKey = new ArrayList<>();
 		for (String keyName : primaryKeys) {
 			primaryKey.add(clazz.getDeclaredField(keyName));
 		}

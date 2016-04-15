@@ -60,7 +60,7 @@ public abstract class JWizardDialog extends JDialog {
 
 		eventDispatcher = new EventDispatcher<>();
 
-		history = new ArrayList<WizardStep>();
+		history = new ArrayList<>();
 
 		// UI
 		contentPane = new JPanel(new BorderLayout());

@@ -136,7 +136,7 @@ public class XML {
 			}
 
 			if (childs == null) {
-				childs = new Vector<Node>();
+				childs = new Vector<>();
 			}
 			childs.add(child);
 			
@@ -191,7 +191,7 @@ public class XML {
 		public Node setAttribute(String name, Object value) {
 
 			if (attributes == null) {
-				attributes = new HashMap<String, String>();
+				attributes = new HashMap<>();
 			}
 
 			attributes.put(name, String.valueOf(value));

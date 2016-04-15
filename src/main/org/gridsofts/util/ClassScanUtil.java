@@ -81,7 +81,7 @@ public class ClassScanUtil {
 	 */
 	public static <T> List<Class<? extends T>> findClasses(ClassLoader classLoader, Class<T> superClass,
 			String basePackage, boolean recursive) {
-		List<Class<? extends T>> classList = new ArrayList<Class<? extends T>>();
+		List<Class<? extends T>> classList = new ArrayList<>();
 
 		String packageDirName = basePackage.replaceAll("\\.+", "/");
 

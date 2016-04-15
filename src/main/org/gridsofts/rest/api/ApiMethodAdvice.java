@@ -158,8 +158,8 @@ public class ApiMethodAdvice {
 
 		String[] ApiHeaderNames = apiHeaderNames.replaceAll("\\s+", "").split(",+");
 
-		List<String> keysList = new ArrayList<String>();
-		Map<String, String> valMap = new HashMap<String, String>();
+		List<String> keysList = new ArrayList<>();
+		Map<String, String> valMap = new HashMap<>();
 
 		for (String headerName : ApiHeaderNames) {
 			keysList.add(headerName);

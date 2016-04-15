@@ -12,7 +12,7 @@ public class EachTester {
 
 	private static final List<IExpTester> testerAry;
 	static {
-		testerAry = new ArrayList<IExpTester>();
+		testerAry = new ArrayList<>();
 
 		testerAry.add(new BooleanTester());
 		testerAry.add(new EqualTester());

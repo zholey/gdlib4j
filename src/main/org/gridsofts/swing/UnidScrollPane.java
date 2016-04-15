@@ -357,8 +357,8 @@ public class UnidScrollPane extends JPanel {
 		private static final int MOUSE_RELEASED = 3;
 
 		// 配色方案
-		private static HashMap<String, Color> enabledColorScheme = new HashMap<String, Color>();
-		private static HashMap<String, Color> disabledColorScheme = new HashMap<String, Color>();
+		private static HashMap<String, Color> enabledColorScheme = new HashMap<>();
+		private static HashMap<String, Color> disabledColorScheme = new HashMap<>();
 
 		static {
 			// 有效

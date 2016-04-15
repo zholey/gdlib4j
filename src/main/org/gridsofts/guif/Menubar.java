@@ -38,7 +38,7 @@ public class Menubar extends JMenuBar {
 	/** 事件驱动 器 */
 	private EventDispatcher<IMenuListener, EventObject<Action>> evtDispatcher;
 
-	private Map<String, JMenu> menuNameMap = new HashMap<String, JMenu>();
+	private Map<String, JMenu> menuNameMap = new HashMap<>();
 
 	private Menubar() {
 		evtDispatcher = new EventDispatcher<>();
@@ -87,7 +87,7 @@ public class Menubar extends JMenuBar {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			evtDispatcher.dispatchEvent("menuItemClicked", new EventObject<Action>(e.getSource(), action));
+			evtDispatcher.dispatchEvent("menuItemClicked", new EventObject<>(e.getSource(), action));
 		}
 	}
 

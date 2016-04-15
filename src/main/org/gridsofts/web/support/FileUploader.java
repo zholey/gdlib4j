@@ -58,7 +58,7 @@ public class FileUploader {
 	public Map<String, FileItem> doUpload(HttpServletRequest request)
 			throws IOException {
 		
-		Map<String, FileItem> files = new HashMap<String, FileItem>();
+		Map<String, FileItem> files = new HashMap<>();
 
 		buffer = new byte[request.getContentLength()]; // 创建数据缓冲区
 
@@ -192,7 +192,7 @@ public class FileUploader {
 	private FileItem getFileItem() {
 		FileItem file = new FileItem();
 
-		Vector<byte[]> buffer = new Vector<byte[]>();
+		Vector<byte[]> buffer = new Vector<>();
 
 		int dataSize = 0;
 		byte[] line = null;

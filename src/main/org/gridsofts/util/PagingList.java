@@ -281,7 +281,7 @@ public class PagingList<E> extends ArrayList<E> {
 	 */
 	public List<E> getClip() {
 
-		List<E> clipList = new ArrayList<E>();
+		List<E> clipList = new ArrayList<>();
 
 		for (int i = 0; i < size(); i++) {
 			clipList.add(get(i));

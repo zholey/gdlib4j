@@ -102,7 +102,7 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 	 */
 	public File[] getSelectedFiles() {
 
-		List<File> files = new ArrayList<File>();
+		List<File> files = new ArrayList<>();
 
 		int count = fileListPane.getChildCount();
 		for (int i = 0; i < count; i++) {
@@ -121,7 +121,7 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 	 */
 	public String[] getSelectedFileName() {
 
-		List<String> files = new ArrayList<String>();
+		List<String> files = new ArrayList<>();
 
 		int count = fileListPane.getChildCount();
 		for (int i = 0; i < count; i++) {
@@ -140,7 +140,7 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 	 */
 	public String[] getSelectedFilePath() {
 
-		List<String> files = new ArrayList<String>();
+		List<String> files = new ArrayList<>();
 
 		int count = fileListPane.getChildCount();
 		for (int i = 0; i < count; i++) {

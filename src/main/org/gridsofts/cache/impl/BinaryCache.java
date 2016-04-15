@@ -97,7 +97,7 @@ public class BinaryCache implements ICache {
 			
 			Collection<String> kList = null;
 			if (keys != null) {
-				kList = new ArrayList<String>();
+				kList = new ArrayList<>();
 				
 				for (byte[] k : keys) {
 					kList.add(getKey(k));
@@ -126,7 +126,7 @@ public class BinaryCache implements ICache {
 
 			Collection<T> values = null;
 			if (keys != null) {
-				values = new ArrayList<T>();
+				values = new ArrayList<>();
 
 				for (byte[] k : keys) {
 

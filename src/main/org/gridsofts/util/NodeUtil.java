@@ -111,7 +111,7 @@ public class NodeUtil {
 	 */
 	public static List<Node> getElementsByTagName(Node root, String tagName) {
 
-		List<Node> nodeList = new ArrayList<Node>();
+		List<Node> nodeList = new ArrayList<>();
 
 		if (root != null && root.getChildNodes().getLength() > 0) {
 
@@ -176,7 +176,7 @@ public class NodeUtil {
 		json.append(getJsonAttribute("value", getValue(root), null) + ",");
 
 		// child nodes
-		Map<String, Object> childCacheMap = new HashMap<String, Object>();
+		Map<String, Object> childCacheMap = new HashMap<>();
 
 		NodeList childList = root.getChildNodes();
 		for (int i = 0; childList != null && i < childList.getLength(); i++) {
@@ -196,7 +196,7 @@ public class NodeUtil {
 					// 如果已经存在当前节点名称，则转换为数组存入
 					else if (String.class.isInstance(childCacheMap.get(childName))) {
 
-						List<String> childAry = new ArrayList<String>();
+						List<String> childAry = new ArrayList<>();
 
 						childAry.add(childCacheMap.remove(childName).toString());
 						childAry.add(transformToJson(child));

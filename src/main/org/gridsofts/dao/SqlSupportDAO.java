@@ -98,7 +98,7 @@ public abstract class SqlSupportDAO extends JdbcSupportDAO {
 	public synchronized <T> List<T> executeQuery(Class<T> t, int start, int limit, String sql, Object... param)
 			throws DAOException {
 
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 
 		PreparedStatement stat = null;
 		PResultSet rs = null;
@@ -194,7 +194,7 @@ public abstract class SqlSupportDAO extends JdbcSupportDAO {
 	public synchronized List<Map<String, Object>> executeQuery(int start, int limit, String sql, Object... param)
 			throws DAOException {
 
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> list = new ArrayList<>();
 
 		PreparedStatement stat = null;
 		ResultSet rs = null;

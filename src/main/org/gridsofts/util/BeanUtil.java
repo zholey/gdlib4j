@@ -126,7 +126,7 @@ public class BeanUtil {
 	 * @return
 	 */
 	public static Field[] getFieldByAnnotation(Class<?> beanClass, Class<? extends Annotation> annotationClass) {
-		List<Field> fldList = new ArrayList<Field>();
+		List<Field> fldList = new ArrayList<>();
 
 		if (beanClass != null) {
 			Field[] fldAry = getDeclaredFields(beanClass, true);
@@ -149,7 +149,7 @@ public class BeanUtil {
 	 * @return
 	 */
 	public static Field[] getDeclaredFields(Class<?> beanClass, boolean includeSuperClass) {
-		List<Field> fldList = new ArrayList<Field>();
+		List<Field> fldList = new ArrayList<>();
 
 		if (beanClass != null) {
 			Field[] fldAry = beanClass.getDeclaredFields();
@@ -307,7 +307,7 @@ public class BeanUtil {
 	 */
 	public static Map<String, Object> getEntityMap(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
 
-		Map<String, Object> entity = new HashMap<String, Object>();
+		Map<String, Object> entity = new HashMap<>();
 
 		int colCount = rsmd.getColumnCount();
 

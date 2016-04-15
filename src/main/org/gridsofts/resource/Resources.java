@@ -25,7 +25,7 @@ public class Resources implements Serializable {
 	/**
 	 * 字体资源
 	 */
-	public static Map<String, java.awt.Font> Font = new HashMap<String, java.awt.Font>();
+	public static Map<String, java.awt.Font> Font = new HashMap<>();
 
 	static {
 
@@ -45,7 +45,7 @@ public class Resources implements Serializable {
 	/**
 	 * 图片资源
 	 */
-	public static Map<String, Image> Image = new HashMap<String, Image>();
+	public static Map<String, Image> Image = new HashMap<>();
 
 	static {
 
@@ -105,7 +105,7 @@ public class Resources implements Serializable {
 	/**
 	 * 多语资源
 	 */
-	public static Map<String, Properties> Language = new HashMap<String, Properties>();
+	public static Map<String, Properties> Language = new HashMap<>();
 	static {
 
 		try {

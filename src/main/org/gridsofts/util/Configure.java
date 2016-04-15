@@ -29,7 +29,7 @@ public class Configure extends Properties {
 	}
 	
 	private static class SingletonHolder {
-		private static Map<String, Configure> instanceMap = new HashMap<String, Configure>();
+		private static Map<String, Configure> instanceMap = new HashMap<>();
 	}
 
 	public static Configure getInstance(String cfgFilePath) {

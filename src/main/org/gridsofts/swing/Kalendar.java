@@ -78,7 +78,7 @@ public class Kalendar extends JComponent {
 
 	public Kalendar() {
 
-		underLineDates = new HashSet<Date>();
+		underLineDates = new HashSet<>();
 
 		kalendarES = new EventDispatcher<>();
 

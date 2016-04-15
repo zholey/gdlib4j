@@ -276,7 +276,7 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	protected List<TreeNode> getAllLeafNodes(TreeNode node, List<TreeNode> leafNodes) {
 
 		if (leafNodes == null) {
-			leafNodes = new ArrayList<TreeNode>();
+			leafNodes = new ArrayList<>();
 		}
 
 		if (node.isLeaf()) {
@@ -301,7 +301,7 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	protected TreePath getNodeTreePath(TreeNode node, List<TreeNode> pathObjs, boolean hasLeaf) {
 
 		if (pathObjs == null) {
-			pathObjs = new ArrayList<TreeNode>();
+			pathObjs = new ArrayList<>();
 		}
 
 		if (node.getParent() != null) {
@@ -319,6 +319,6 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	public void valueChanged(TreeSelectionEvent evt) {
 
 		evtDispatcher.dispatchEvent("onSelectedNode",
-				new EventObject<ITreeNode>(this, selectedTreeNode = getSelectedTreeNode()));
+				new EventObject<>(this, selectedTreeNode = getSelectedTreeNode()));
 	}
 }

@@ -34,7 +34,7 @@ public class WebContext implements Serializable {
 	// HttpSession Key
 	protected static final String HTTP_SESSION = "HTTP_SESSION";
 
-	private static ThreadLocal<Map<String, Object>> localMap = new ThreadLocal<Map<String, Object>>();
+	private static ThreadLocal<Map<String, Object>> localMap = new ThreadLocal<>();
 	
 	private static ServletContext servletContext;
 	private static ApplicationContext applicationContext;

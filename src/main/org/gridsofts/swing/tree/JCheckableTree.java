@@ -48,7 +48,7 @@ public class JCheckableTree extends AbstractTree {
 	 * @return
 	 */
 	private List<ITreeNode> _getLastCheckedNodes(DefaultMutableTreeNode mutableNode) {
-		List<ITreeNode> checkedList = new ArrayList<ITreeNode>();
+		List<ITreeNode> checkedList = new ArrayList<>();
 
 		if (mutableNode == null) {
 			mutableNode = (DefaultMutableTreeNode) getModel().getRoot();

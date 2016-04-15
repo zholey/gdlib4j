@@ -40,7 +40,7 @@ public class MysqlDialect implements Serializable, IDialect {
 		}
 
 		// 取出需要处理的字段
-		List<Field> validFields = new ArrayList<Field>();
+		List<Field> validFields = new ArrayList<>();
 		for (int i = 0; i < fields.length; i++) {
 			String colName = fields[i].getName();
 

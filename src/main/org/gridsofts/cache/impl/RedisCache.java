@@ -118,7 +118,7 @@ public class RedisCache implements ICache {
 
 			Collection<T> values = null;
 			if (keys != null) {
-				values = new ArrayList<T>();
+				values = new ArrayList<>();
 
 				for (String k : keys) {
 

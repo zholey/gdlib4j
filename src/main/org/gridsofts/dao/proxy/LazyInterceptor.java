@@ -42,8 +42,8 @@ public class LazyInterceptor implements MethodInterceptor, Serializable {
 
 		this.tableAnnotation = tableAnnotation;
 
-		this.otmFieldAry = new ArrayList<Field>();
-		this.mtoFieldAry = new ArrayList<Field>();
+		this.otmFieldAry = new ArrayList<>();
+		this.mtoFieldAry = new ArrayList<>();
 
 		// 取出OneToMany、ManyToOne标注
 		Field[] fields = cls.getDeclaredFields();

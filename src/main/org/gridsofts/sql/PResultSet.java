@@ -46,8 +46,8 @@ public class PResultSet implements Serializable {
 
 		ResultSetMetaData rsmd = rs.getMetaData();
 
-		row = new ArrayList<ArrayList<Object>>();
-		colNameAry = new ArrayList<String>();
+		row = new ArrayList<>();
+		colNameAry = new ArrayList<>();
 		rowPoint = -1;
 
 		int colCount = rsmd.getColumnCount();
@@ -56,7 +56,7 @@ public class PResultSet implements Serializable {
 		}
 
 		while (rs.next()) {
-			this.col = new ArrayList<Object>();
+			this.col = new ArrayList<>();
 			for (int i = 1; i <= colCount; i++) {
 				this.col.add(rs.getObject(i));
 			}
@@ -142,7 +142,7 @@ public class PResultSet implements Serializable {
 	 */
 	public Map<String, Object> getRowValueMap() {
 
-		Map<String, Object> valueMap = new HashMap<String, Object>();
+		Map<String, Object> valueMap = new HashMap<>();
 		
 		ArrayList<Object> temp = null;
 

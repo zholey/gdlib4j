@@ -102,7 +102,7 @@ public class SmtpSender implements Serializable {
 		timeout = 30000;
 		charset = Charset.defaultCharset().displayName();
 
-		Hashtable<String, String> hashtable = new Hashtable<String, String>();
+		Hashtable<String, String> hashtable = new Hashtable<>();
 		hashtable.put("java.naming.factory.initial",
 				"com.sun.jndi.dns.DnsContextFactory");
 

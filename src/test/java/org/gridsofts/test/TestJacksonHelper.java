@@ -16,12 +16,12 @@ import org.gridsofts.json.JacksonHelper;
 public class TestJacksonHelper {
 
 	public static void main(String[] args) {
-		List<User> list = new ArrayList<User>();
+		List<User> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			User u = new User();
 			u.setName("u" + i);
 
-			List<Score> scoreList = new ArrayList<Score>();
+			List<Score> scoreList = new ArrayList<>();
 			u.setScoreList(scoreList);
 			scoreList.add(new Score());
 			scoreList.add(new Score());

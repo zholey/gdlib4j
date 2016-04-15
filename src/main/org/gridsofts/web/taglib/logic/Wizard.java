@@ -60,7 +60,7 @@ public class Wizard extends BodyTagSupport {
 			name = Wizard.class.getName().replaceAll("\\.", "_");
 		}
 
-		stepContent = new ArrayList<String>();
+		stepContent = new ArrayList<>();
 
 		// 获取向导的走行方向
 		direction = request.getParameter("direction");

@@ -23,7 +23,7 @@ public class Resource implements Serializable {
 	/**
 	 * 多语资源
 	 */
-	public static Map<String, Properties> Language = new HashMap<String, Properties>();
+	public static Map<String, Properties> Language = new HashMap<>();
 
 	static {
 

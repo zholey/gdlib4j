@@ -37,7 +37,7 @@ public class ForEach extends BodyTagSupport implements IEachable {
 
 	private static final List<AbstractVariableExp> variableExpAry;
 	static {
-		variableExpAry = new ArrayList<AbstractVariableExp>();
+		variableExpAry = new ArrayList<>();
 
 		variableExpAry.add(new NumberVariableExp());
 		variableExpAry.add(new DTVariableExp());

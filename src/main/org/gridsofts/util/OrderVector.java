@@ -32,7 +32,7 @@ public class OrderVector<E> extends Vector<E> {
 	}
 
 	public void reorder() {
-		OrderVector<E> v = new OrderVector<E>();
+		OrderVector<E> v = new OrderVector<>();
 		for (E e : this) {
 			v.addElement(e);
 		}

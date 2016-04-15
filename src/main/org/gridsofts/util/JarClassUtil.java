@@ -107,7 +107,7 @@ public class JarClassUtil {
 
 		public JarClassLoader(URL url) {
 			super(null);
-			dynaclazns = new HashSet<String>();
+			dynaclazns = new HashSet<>();
 
 			// 获取jar file
 			JarFile jarFile = null;
@@ -132,7 +132,7 @@ public class JarClassUtil {
 
 		public JarClassLoader(File file) {
 			super(null);
-			dynaclazns = new HashSet<String>();
+			dynaclazns = new HashSet<>();
 
 			// 获取jar file
 			JarFile jarFile = null;
