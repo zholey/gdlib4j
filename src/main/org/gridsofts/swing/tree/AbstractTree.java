@@ -312,7 +312,11 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 			pathObjs.add(node);
 		}
 
-		return new TreePath(pathObjs.toArray(new TreeNode[0]));
+		if (!pathObjs.isEmpty()) {
+			return new TreePath(pathObjs.toArray(new TreeNode[0]));
+		}
+		
+		return null;
 	}
 
 	@Override

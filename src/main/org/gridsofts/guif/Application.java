@@ -8,7 +8,6 @@ package org.gridsofts.guif;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -25,7 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
 
 import org.gridsofts.guif.Menubar.Action;
-import org.gridsofts.guif.itf.IAuthentication;
+import org.gridsofts.guif.itf.IAuthenticator;
 import org.gridsofts.guif.itf.IDataProvider;
 import org.gridsofts.guif.itf.IMenuListener;
 import org.gridsofts.guif.itf.IWindowListener;
@@ -62,13 +61,11 @@ public class Application extends JFrame implements IMenuListener {
 
 	/*******/
 	private Configure configure;
-	private IAuthentication authenticator = null;
+	private IAuthenticator authenticator = null;
 	private IWindowListener windowListener = null;
 
 	private IDataProvider<ITreeNode> discoveryProvider = null;
 	private ITreeListener discoveryListener = null;
-
-	private Image bannerImg = null;
 
 	/******/
 	private final Session session = new Session();
@@ -83,11 +80,7 @@ public class Application extends JFrame implements IMenuListener {
 		_initComponents();
 	}
 
-	public void setLoginBannerImage(Image bannerImg) {
-		this.bannerImg = bannerImg;
-	}
-
-	public Application setAuthenticator(IAuthentication authenticator) {
+	public Application setAuthenticator(IAuthenticator authenticator) {
 		this.authenticator = authenticator;
 		return this;
 	}
@@ -124,50 +117,6 @@ public class Application extends JFrame implements IMenuListener {
 	 */
 	public void rockroll() {
 
-		// workbench
-		if (discoveryProvider != null) {
-			
-			// 分割容器
-			JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-			splitPane.setBorder(BorderFactory.createEmptyBorder());
-			getContentPane().add(splitPane, BorderLayout.CENTER);
-
-			// 左侧树面板
-			splitPane.setLeftComponent(discovery = new DiscoveryTree());
-			discovery.setDataProvider(discoveryProvider);
-
-			// 右侧主容器
-			splitPane.setRightComponent(workbenchPane);
-			
-			// association listener
-			if (discoveryListener != null) {
-				discovery.addTreeListener(discoveryListener);
-			}
-
-			// init data
-			discovery.onDataChanged();
-
-		} else {
-			getContentPane().add(workbenchPane, BorderLayout.CENTER);
-		}
-
-		// authentication
-		if (authenticator != null) {
-			new LoginDialog(authenticator, configure, getIconImage(), bannerImg).setVisible(true);
-
-			try {
-				logger.debug("需要验证用户身份，等待登录完成 ...");
-
-				synchronized (this) {
-					wait();
-				}
-			} catch (InterruptedException e) {
-				logger.error("主线程无法转入等待状态", e);
-
-				System.exit(-1);
-			}
-		}
-
 		if (windowListener == null) {
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		} else {
@@ -182,6 +131,50 @@ public class Application extends JFrame implements IMenuListener {
 					}
 				}
 			});
+		}
+
+		// workbench
+		if (discoveryProvider != null) {
+
+			// 分割容器
+			JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+			splitPane.setBorder(BorderFactory.createEmptyBorder());
+			getContentPane().add(splitPane, BorderLayout.CENTER);
+
+			// 左侧树面板
+			splitPane.setLeftComponent(discovery = new DiscoveryTree());
+			discovery.setDataProvider(discoveryProvider);
+
+			// 右侧主容器
+			splitPane.setRightComponent(workbenchPane);
+
+			// association listener
+			if (discoveryListener != null) {
+				discovery.addTreeListener(discoveryListener);
+			}
+
+			// init data
+			discovery.onDataChanged();
+
+		} else {
+			getContentPane().add(workbenchPane, BorderLayout.CENTER);
+		}
+
+		// authentication
+		if (authenticator != null) {
+
+			try {
+				logger.debug("需要验证用户身份，等待登录完成 ...");
+
+				authenticator.execute(this);
+
+				synchronized (this) {
+					wait();
+				}
+			} catch (InterruptedException e) {
+				logger.error("主线程无法转入等待状态", e);
+				System.exit(-1);
+			}
 		}
 
 		// show
@@ -240,11 +233,11 @@ public class Application extends JFrame implements IMenuListener {
 	 * @param dialogContentComp
 	 */
 	protected void popupModalDialog(Component dialogContentComp) {
-		
+
 		if (JDialog.class.isAssignableFrom(dialogContentComp.getClass())) {
 			((JDialog) dialogContentComp).setVisible(true);
 		}
-		
+
 		JDialog dialog = new JDialog(_instance, dialogContentComp.getName(), true);
 		dialog.add(dialogContentComp);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
