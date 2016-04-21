@@ -37,8 +37,8 @@ public class JCheckableTree extends AbstractTree {
 	 * 
 	 * @return
 	 */
-	public List<ITreeNode> getLastCheckedNodes() {
-		return _getLastCheckedNodes(null);
+	public List<ITreeNode> getCheckedLastNodes() {
+		return _getCheckedLastNodes(null);
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class JCheckableTree extends AbstractTree {
 	 * @param mutableNode
 	 * @return
 	 */
-	private List<ITreeNode> _getLastCheckedNodes(DefaultMutableTreeNode mutableNode) {
+	private List<ITreeNode> _getCheckedLastNodes(DefaultMutableTreeNode mutableNode) {
 		List<ITreeNode> checkedList = new ArrayList<>();
 
 		if (mutableNode == null) {
@@ -64,7 +64,7 @@ public class JCheckableTree extends AbstractTree {
 
 			else if (!mutableNode.isLeaf() && mutableNode.getChildCount() > 0) {
 				for (int i = 0; i < mutableNode.getChildCount(); i++) {
-					checkedList.addAll(_getLastCheckedNodes((DefaultMutableTreeNode) mutableNode.getChildAt(i)));
+					checkedList.addAll(_getCheckedLastNodes((DefaultMutableTreeNode) mutableNode.getChildAt(i)));
 				}
 			}
 		}

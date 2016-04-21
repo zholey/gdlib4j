@@ -167,7 +167,7 @@ public abstract class JWizardDialog extends JDialog {
 		WizardStep step = history.get(currentStepIndex);
 		int historySize = history.size();
 
-		if (step.isLastStep() || step.getNextStepClass() == null) {
+		if (step.getNextStepClass() == null) {
 			return;
 		}
 
@@ -224,7 +224,7 @@ public abstract class JWizardDialog extends JDialog {
 			btnPrevious.setEnabled(true);
 		}
 
-		if (currentStep.isLastStep()) {
+		if (currentStep.getNextStepClass() == null) {
 			btnComplete.setEnabled(true);
 		} else {
 			btnNext.setEnabled(true);

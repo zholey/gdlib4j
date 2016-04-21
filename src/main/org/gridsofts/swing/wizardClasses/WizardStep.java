@@ -10,9 +10,7 @@ public interface WizardStep {
 	
 	public boolean preComplete();
 	
-	public boolean isLastStep();
+	public Object getData();
 	
 	public Class<? extends WizardStep> getNextStepClass();
-	
-	public Object getData();
 }
