@@ -8,12 +8,15 @@ package org.gridsofts.gridfs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.gridsofts.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.MongoDbFactory;
 
+import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -80,11 +83,35 @@ public class GridFSHelper {
 		// 文件操作是在DB的基础上实现的，与表和文档没有关系
 		GridFS gridFS = new GridFS(mongoDbFactory.getDb(), bucket);
 
-		GridFSDBFile gridfile = gridFS.findOne(fileId);
+		DBObject query = QueryBuilder.start("_id").is(fileId).get();
+		GridFSDBFile gridfile = gridFS.findOne(query);
 		if (gridfile != null) {
 			return gridfile.getInputStream();
 		}
 
 		return null;
+	}
+
+	/**
+	 * 从mongodb中获取需要的文件,并写入输出流 
+	 *
+	 * @param fileId
+	 * @param outStream
+	 * @return
+	 * @throws IOException 
+	 */
+	public long writeTo(String fileId, OutputStream outStream) throws IOException {
+		logger.info("reading from MongoDB [{}] [{}]", fileId, bucket);
+
+		// 文件操作是在DB的基础上实现的，与表和文档没有关系
+		GridFS gridFS = new GridFS(mongoDbFactory.getDb(), bucket);
+
+		DBObject query = QueryBuilder.start("_id").is(fileId).get();
+		GridFSDBFile gridfile = gridFS.findOne(query);
+		if (gridfile != null) {
+			return gridfile.writeTo(outStream);
+		}
+
+		return -1;
 	}
 }
