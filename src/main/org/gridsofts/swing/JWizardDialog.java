@@ -8,6 +8,7 @@ package org.gridsofts.swing;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -17,8 +18,6 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
@@ -54,8 +53,8 @@ public abstract class JWizardDialog extends JDialog {
 
 	private String title;
 
-	public JWizardDialog(JFrame owner, String title) {
-		super(owner, title, true);
+	public JWizardDialog(Frame owner, String title, int width, int height) {
+		super(owner, title, true, width, height);
 		this.title = title;
 
 		eventDispatcher = new EventDispatcher<>();
