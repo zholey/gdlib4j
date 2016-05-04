@@ -97,6 +97,6 @@ public class Copyright extends JComponent {
 		LEFT, CENTER, RIGHT
 	}
 
-	private static final String TXT = "\u6280\u672F\u652F\u6301\uFF1A\u683C\u70B9"
+	private static final String TXT = "\u7248\u6743\u6240\u6709\uFF1A\u683C\u70B9"
 			+ "\u8F6F\u4EF6\uFF08\u5317\u4EAC\uFF09\u6709\u9650\u516C\u53F8";
 }
