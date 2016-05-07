@@ -24,12 +24,13 @@ public class JEditableTree extends AbstractTree implements TreeModelListener {
 	public JEditableTree(boolean editable) {
 		super();
 
+		setCellRenderer(new DefaultCellRenderer(ITreeNode.class));
+		
 		if (editable) {
 			setEditable(true);
 			setDragEnabled(true);
+			setInvokesStopCellEditing(true);
 		}
-		
-		setCellRenderer(new DefaultCellRenderer(ITreeNode.class));
 
 		// 注册监听
 		getModel().addTreeModelListener(this);
