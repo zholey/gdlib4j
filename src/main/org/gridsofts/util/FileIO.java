@@ -28,7 +28,34 @@ public class FileIO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 将文件内容读入至内存
+	 * 将文本文件内容读入至内存
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static String readString(File file) {
+
+		if (file != null && file.exists() && file.isFile()) {
+
+			StringBuffer strBuffer = new StringBuffer();
+
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+				String readStr = null;
+
+				while ((readStr = reader.readLine()) != null) {
+					strBuffer.append(readStr);
+				}
+			} catch (Throwable e) {
+			}
+
+			return strBuffer.toString();
+		}
+
+		return null;
+	}
+
+	/**
+	 * 将二进制文件内容读入至内存
 	 * 
 	 * @param file
 	 * @return
@@ -38,8 +65,7 @@ public class FileIO implements Serializable {
 		if (file != null && file.exists() && file.isFile()) {
 
 			ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-			try {
-				BufferedInputStream bufInstream = new BufferedInputStream(new FileInputStream(file));
+			try(BufferedInputStream bufInstream = new BufferedInputStream(new FileInputStream(file))) {
 
 				byte[] readBuf = new byte[4096];
 				int readLen = 0;
