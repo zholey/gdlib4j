@@ -7,6 +7,7 @@ package org.gridsofts.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Rectangle;
 
 import javax.swing.GroupLayout;
 import javax.swing.JPanel;
@@ -106,5 +107,15 @@ public class VerticalLayoutPane extends VScrollablePane {
 		if (contentPane != null) {
 			contentPane.updateUI();
 		}
+	}
+
+	@Override
+	public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+		return 50;
+	}
+
+	@Override
+	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+		return 50;
 	}
 }
