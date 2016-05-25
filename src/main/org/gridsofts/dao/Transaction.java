@@ -52,7 +52,7 @@ public abstract class Transaction implements Serializable {
 		// 加载配置信息（如果有）
 		Properties property = new Properties();
 		try {
-			property.load(Transaction.class.getResourceAsStream("/GDlib4j.dao.properties"));
+			property.load(Transaction.class.getResourceAsStream("/etc/GDlib4j.dao.properties"));
 
 			if (property.containsKey("dialect")) {
 				Class<?> dialectCls = Class.forName(property.getProperty("dialect"));
