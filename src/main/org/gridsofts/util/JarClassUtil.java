@@ -53,7 +53,7 @@ public class JarClassUtil {
 	 * @param jarFile
 	 * @param recursive
 	 */
-	private static <T> void loadClassesInJar(ClassLoader classLoader, List<Class<? extends T>> classList,
+	public static <T> void loadClassesInJar(ClassLoader classLoader, List<Class<? extends T>> classList,
 			Class<T> superClass, String packageName, URL jarUrl, File jarFile, final boolean recursive) {
 
 		JarFile jar = null;
@@ -104,9 +104,15 @@ public class JarClassUtil {
 	public static class JarClassLoader extends java.lang.ClassLoader {
 
 		private HashSet<String> dynaclazns;
+		
 
 		public JarClassLoader(URL url) {
-			super(null);
+			this(null, url);
+		}
+
+		public JarClassLoader(ClassLoader parent, URL url) {
+			super(parent);
+			
 			dynaclazns = new HashSet<>();
 
 			// 获取jar file
@@ -131,7 +137,12 @@ public class JarClassUtil {
 		}
 
 		public JarClassLoader(File file) {
-			super(null);
+			this(null, file);
+		}
+
+		public JarClassLoader(ClassLoader parent, File file) {
+			super(parent);
+			
 			dynaclazns = new HashSet<>();
 
 			// 获取jar file
