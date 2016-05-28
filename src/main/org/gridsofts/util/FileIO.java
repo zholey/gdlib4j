@@ -43,7 +43,7 @@ public class FileIO implements Serializable {
 				String readStr = null;
 
 				while ((readStr = reader.readLine()) != null) {
-					strBuffer.append(readStr);
+					strBuffer.append(readStr + "\r\n");
 				}
 			} catch (Throwable e) {
 			}
