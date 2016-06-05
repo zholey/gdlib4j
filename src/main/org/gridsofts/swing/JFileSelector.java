@@ -23,31 +23,32 @@ import javax.swing.filechooser.FileFilter;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.fileSelectorClasses.FilePane;
 import org.gridsofts.swing.fileSelectorClasses.FilePane.IFilePaneListener;
-
+import org.gridsofts.swing.fileSelectorClasses.IFileSelectorListener;
 
 /**
  * 文件选择编辑器
  * 
  * @author zholey
- * 
  */
 public class JFileSelector extends JPanel implements IFilePaneListener {
 	private static final long serialVersionUID = 1L;
+
+	private IFileSelectorListener listener;
 
 	private VerticalLayoutPane fileListPane;
 
 	private JToolBar toolbar;
 	private JButton btnAdd;
-	
+
 	private String btnLabel = "添加";
 
 	// 前置过滤开关。默认不过滤，如果设置为True，则还需指定相应的过滤器
 	private boolean forceFilte;
 	private FileFilter filter;
-	
+
 	// 允许目录选择开关。默认不允许
 	private boolean allowDirectory;
-	
+
 	public JFileSelector() {
 		this(false, false);
 	}
@@ -90,7 +91,10 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				onAppendFile();
+
+				if (listener == null || listener.preAdd(fileListPane.getChildCount())) {
+					onAppendFile();
+				}
 			}
 		});
 	}
@@ -179,6 +183,10 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 		fileListPane.updateUI();
 	}
 
+	public void setFileSelectorListener(IFileSelectorListener listener) {
+		this.listener = listener;
+	}
+
 	public String getBtnLabel() {
 		return btnLabel;
 	}
@@ -203,7 +211,7 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 
 		JFileChooser jfc = new JFileChooser();
 		jfc.setMultiSelectionEnabled(true);
-		
+
 		if (allowDirectory) {
 			jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		} else {
@@ -215,7 +223,13 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 		}
 
 		if (JFileChooser.APPROVE_OPTION == jfc.showOpenDialog(JFileSelector.this.getRootPane())) {
-			addSelectedFiles(jfc.getSelectedFiles());
+			File[] files = jfc.getSelectedFiles();
+			
+			addSelectedFiles(files);
+			
+			if (listener != null) {
+				listener.addFile(files);
+			}
 		}
 	}
 
@@ -225,7 +239,15 @@ public class JFileSelector extends JPanel implements IFilePaneListener {
 	@Override
 	public synchronized void onRemoveFile(FilePane fp) {
 
-		fileListPane.removeChild(fp);
-		fileListPane.updateUI();
+		File removingFile = fp.getFile();
+		if (listener == null || listener.preRemove(removingFile)) {
+			
+			fileListPane.removeChild(fp);
+			fileListPane.updateUI();
+			
+			if (listener != null) {
+				listener.removeFile(removingFile);
+			}
+		}
 	}
 }
