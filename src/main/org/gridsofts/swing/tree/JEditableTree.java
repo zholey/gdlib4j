@@ -24,6 +24,7 @@ public class JEditableTree extends AbstractTree implements TreeModelListener {
 	public JEditableTree(boolean editable) {
 		super();
 
+		setRootVisible(false);
 		setCellRenderer(new DefaultCellRenderer(ITreeNode.class));
 		
 		if (editable) {

@@ -26,6 +26,7 @@ public class JCheckableTree extends AbstractTree {
 	public JCheckableTree() {
 		super();
 
+		setRootVisible(false);
 		setCellRenderer(new DefaultCellRenderer(ICheckable.class));
 
 		// 注册监听
