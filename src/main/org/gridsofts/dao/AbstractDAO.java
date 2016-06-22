@@ -30,7 +30,7 @@ import org.gridsofts.util.StringUtil;
  * 
  * @author Lei
  */
-public abstract class Transaction implements Serializable {
+abstract class AbstractDAO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	protected IDialect dialect = null;
@@ -42,17 +42,17 @@ public abstract class Transaction implements Serializable {
 	protected IConnectionFactory factory;
 	protected Connection conn;
 
-	protected Transaction() {
+	protected AbstractDAO() {
 		this(null);
 	}
 
-	protected Transaction(IConnectionFactory factory) {
+	protected AbstractDAO(IConnectionFactory factory) {
 		this.factory = factory;
 
 		// 加载配置信息（如果有）
 		Properties property = new Properties();
 		try {
-			property.load(Transaction.class.getResourceAsStream("/etc/GDlib4j.dao.properties"));
+			property.load(AbstractDAO.class.getResourceAsStream("/etc/GDlib4j.dao.properties"));
 
 			if (property.containsKey("dialect")) {
 				Class<?> dialectCls = Class.forName(property.getProperty("dialect"));

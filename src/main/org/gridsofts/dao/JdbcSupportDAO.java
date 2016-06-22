@@ -29,7 +29,7 @@ import org.gridsofts.util.BeanUtil;
  * 
  * @author Lei
  */
-public abstract class JdbcSupportDAO extends Transaction implements IDao {
+public abstract class JdbcSupportDAO extends AbstractDAO implements IDao {
 	private static final long serialVersionUID = 1L;
 
 	protected JdbcSupportDAO() {
