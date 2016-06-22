@@ -20,43 +20,52 @@ import javax.swing.event.InternalFrameEvent;
  */
 public class JMultiDocumentPane extends JDesktopPane {
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final int AdjustOffset = 30;
 
 	@Override
 	public Component add(Component comp) {
-		
+
 		JInternalFrame thisFrame = null;
-		
+
 		if (JInternalFrame.class.isAssignableFrom(comp.getClass())) {
 			thisFrame = (JInternalFrame) comp;
 		} else {
 			thisFrame = new JInternalFrame();
 			thisFrame.getContentPane().add(comp);
 			thisFrame.setSize(comp.getPreferredSize());
-			
+
 			thisFrame.setResizable(true);
 			thisFrame.setMaximizable(true);
 			thisFrame.setIconifiable(true);
 			thisFrame.setClosable(true);
-			
+
 			thisFrame.addInternalFrameListener(new InternalFrameAdapter() {
 
 				@Override
 				public void internalFrameDeiconified(InternalFrameEvent e) {
+					JInternalFrame theFrame = e.getInternalFrame();
+
+					try {
+						if (theFrame.isMaximum()) {
+							theFrame.setMaximum(false);
+						}
+					} catch (PropertyVetoException e1) {
+					}
+
 					// 更新窗口标题(Ubuntu下发现的一个Bug：恢复后窗口标题没了)
-					e.getInternalFrame().setTitle(comp.getName());
+					theFrame.setTitle(comp.getName());
 				}
 			});
 		}
-		
+
 		if (thisFrame != null) {
 			int tabIndex = getIndexOf(thisFrame);
 			if (tabIndex < 0) {
 				super.add(thisFrame);
 
 				// 定位
-				int offset = (getComponentCount() % 10 - 1) * AdjustOffset;
+				int offset = (getAllFrames().length % 10 - 1) * AdjustOffset;
 				thisFrame.setLocation(offset, offset);
 
 				// 设置窗口图标&显示
@@ -77,9 +86,33 @@ public class JMultiDocumentPane extends JDesktopPane {
 	}
 
 	/**
+	 * 将所有图标化的窗口恢复
+	 */
+	private void deIconifiedAllFrames() {
+		
+		JInternalFrame[] children = getAllFrames();
+		if (children != null && children.length > 0) {
+			
+			for (int i = 0; i < children.length; i++) {
+				JInternalFrame theFrame = children[i];
+
+				try {
+					if (theFrame.isIcon()) {
+						theFrame.setIcon(false);
+					}
+				} catch (PropertyVetoException e1) {
+				}
+			}
+		}
+	}
+
+	/**
 	 * 横向排列
 	 */
 	public void splitHorizontal() {
+		
+		deIconifiedAllFrames();
+		
 		JInternalFrame[] children = getAllFrames();
 		if (children != null && children.length > 0) {
 
@@ -95,6 +128,9 @@ public class JMultiDocumentPane extends JDesktopPane {
 	 * 纵向排列
 	 */
 	public void splitVertical() {
+		
+		deIconifiedAllFrames();
+		
 		JInternalFrame[] children = getAllFrames();
 		if (children != null && children.length > 0) {
 
@@ -110,6 +146,9 @@ public class JMultiDocumentPane extends JDesktopPane {
 	 * 平均分布
 	 */
 	public void splitTitle() {
+		
+		deIconifiedAllFrames();
+		
 		JInternalFrame[] children = getAllFrames();
 		if (children != null && children.length > 0) {
 
@@ -134,6 +173,9 @@ public class JMultiDocumentPane extends JDesktopPane {
 	 * 窗口层叠
 	 */
 	public void stacking() {
+		
+		deIconifiedAllFrames();
+		
 		JInternalFrame[] children = getAllFrames();
 		if (children != null && children.length > 0) {
 
