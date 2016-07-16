@@ -94,9 +94,9 @@
 		<resources>
 			<resource>
 				<directory>src/resource</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
+				<includes>
+					<include>**/*</include>
+				</includes>
 			</resource>
 		</resources>
 		<plugins>

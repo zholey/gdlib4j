@@ -19,7 +19,12 @@ public class StringUtil {
 	private static final Pattern IsTrueExp = Pattern.compile("(?i)^\\s*true\\s*$");
 	private static final Pattern IsFalseExp = Pattern.compile("(?i)^\\s*false\\s*$");
 
-	private static final Pattern FixedLenExp = Pattern.compile("<[^>]+>");
+	private static final Pattern XmlTagExp = Pattern.compile("<[^>]+>");
+
+	private static final Pattern DateTimeExp = Pattern.compile("(?i)^\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}$");
+	private static final Pattern DateTimeExp2 = Pattern.compile("(?i)^\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}$");
+	private static final Pattern DateExp = Pattern.compile("(?i)^\\d{4}-\\d{2}-\\d{2}$");
+	private static final Pattern TimeExp = Pattern.compile("(?i)^\\d{2}:\\d{2}:\\d{2}$");
 
 	public static boolean isNull(String str) {
 
@@ -37,6 +42,35 @@ public class StringUtil {
 		}
 
 		return IsEmptyExp.matcher(str).find();
+	}
+
+	/**
+	 * 测试给定的字符串是否为日期时间格式
+	 * 
+	 * @param str
+	 * @return 返回小于0则表示不格式不匹配; </br>
+	 *         0-'yyyy-MM-dd HH:mm:ss'; </br>
+	 *         1-'yyyy-MM-dd'; </br>
+	 *         2-'HH:mm:ss'; </br>
+	 *         3-'yyyy-MM-dd HH:mm'
+	 */
+	public static int isDateTime(String str) {
+
+		if (str == null) {
+			return -1;
+		}
+
+		if (DateTimeExp.matcher(str).find()) {
+			return 0;
+		} else if (DateExp.matcher(str).find()) {
+			return 1;
+		} else if (TimeExp.matcher(str).find()) {
+			return 2;
+		} else if (DateTimeExp2.matcher(str).find()) {
+			return 3;
+		}
+
+		return -1;
 	}
 
 	public static boolean isNumber(String str) {
@@ -114,6 +148,20 @@ public class StringUtil {
 	}
 
 	/**
+	 * 过滤所有的Html标记
+	 * 
+	 * @return
+	 */
+	public static String getPureText(String str) {
+
+		if (!isEmpty(str)) {
+			return str.replaceAll(XmlTagExp.pattern(), "");
+		}
+
+		return str;
+	}
+
+	/**
 	 * 返回定长的字符串
 	 * 
 	 * @return
@@ -121,7 +169,7 @@ public class StringUtil {
 	public static String getFixedLength(String str, Integer length) {
 
 		if (!isEmpty(str)) {
-			str = str.replaceAll(FixedLenExp.pattern(), "");
+			str = str.replaceAll(XmlTagExp.pattern(), "");
 
 			if (length < str.length()) {
 				str = str.substring(0, length) + " ...";
@@ -153,7 +201,7 @@ public class StringUtil {
 	 * @return
 	 */
 	public static String joinToString(List<?> list) {
-		
+
 		StringBuffer strBuf = new StringBuffer();
 
 		if (list != null) {
@@ -161,7 +209,7 @@ public class StringUtil {
 				strBuf.append(item.toString());
 			}
 		}
-		
+
 		return strBuf.toString();
 	}
 }

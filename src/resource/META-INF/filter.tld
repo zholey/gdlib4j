@@ -6,6 +6,16 @@
   
   <function>
   	<description>过滤HTML标记</description>
+  	<name>filterTag</name>
+  	<function-class>org.gridsofts.util.StringUtil</function-class>
+  	<function-signature>
+  		java.lang.String getPureText(java.lang.String)
+  	</function-signature>
+  	<example>${filter:filterTag(text)}</example>
+  </function>
+  
+  <function>
+  	<description>将HTML标记原样显示</description>
   	<name>text</name>
   	<function-class>org.gridsofts.web.taglib.logic.forEachClasses.TextVariableExp</function-class>
   	<function-signature>
