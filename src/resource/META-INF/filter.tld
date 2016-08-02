@@ -5,6 +5,16 @@
   <uri>http://www.gridsofts.org/java/taglib/filter</uri>
   
   <function>
+  	<description>将回车换行符替换成Html标记</description>
+  	<name>filterBr</name>
+  	<function-class>org.gridsofts.util.StringUtil</function-class>
+  	<function-signature>
+  		java.lang.String filterBr(java.lang.String, java.lang.String)
+  	</function-signature>
+  	<example>${filter:filterBr(text, replacement)}</example>
+  </function>
+  
+  <function>
   	<description>过滤HTML标记</description>
   	<name>filterTag</name>
   	<function-class>org.gridsofts.util.StringUtil</function-class>

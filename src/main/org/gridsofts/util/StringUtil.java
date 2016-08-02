@@ -146,6 +146,20 @@ public class StringUtil {
 
 		return desStr;
 	}
+	
+	/**
+	 * 将回车换行符替换成Html标记
+	 * 
+	 * @return
+	 */
+	public static String filterBr(String str, String replacement) {
+		
+		if (!isEmpty(str)) {
+			return str.replaceAll("\n", replacement);
+		}
+		
+		return str;
+	}
 
 	/**
 	 * 过滤所有的Html标记
