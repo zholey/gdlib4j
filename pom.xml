@@ -16,6 +16,13 @@
 		<jdk.target>1.8</jdk.target>
 	</properties>
 	
+	<distributionManagement>
+		<repository>
+			<id>nexus-gridsofts</id>
+			<url>http://nexus.gridonline.net/content/repositories/gridsofts/</url>
+		</repository>
+	</distributionManagement>
+	
 	<dependencies>
 	
 		<dependency>
