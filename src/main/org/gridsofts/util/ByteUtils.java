@@ -177,6 +177,20 @@ public class ByteUtils {
 	}
 
 	/**
+	 * 将给定的整数值转换为字节数组；遵循大端模式
+	 * 
+	 * @return
+	 */
+	public static byte[] getBytes4Bigendian(int intVal, byte[] valBytes) {
+
+		for (int i = 0; valBytes != null && i < valBytes.length; i++) {
+			valBytes[valBytes.length - 1 - i] = (byte) ((intVal >>> (8 * i)) & 0xFF);
+		}
+
+		return valBytes;
+	}
+
+	/**
 	 * 从给定的数组缓存中获取整数值；遵循小端模式
 	 * 
 	 * @param data
