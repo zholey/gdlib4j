@@ -22,16 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.gridsofts.dao.annotation.Column;
-import org.gridsofts.dao.annotation.ManyToOne;
-import org.gridsofts.dao.annotation.OneToMany;
-import org.gridsofts.dao.annotation.Table;
-import org.gridsofts.dao.annotation.Transient;
-import org.gridsofts.dao.itf.ITypeConverter;
 
 /**
  * 提供与Bean相关的方法集合
@@ -245,58 +237,6 @@ public class BeanUtil {
 	}
 
 	/**
-	 * 判断给定的字段是否是临时的（无须持久化的）
-	 * 
-	 * @param field
-	 * @return
-	 */
-	public static boolean isTransient(Field field) {
-
-		return Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
-				|| field.getAnnotation(Transient.class) != null || field.getAnnotation(OneToMany.class) != null
-				|| field.getAnnotation(ManyToOne.class) != null;
-	}
-
-	/**
-	 * 判断给定的字段是否是主键
-	 * 
-	 * @param field
-	 * @return
-	 */
-	public static boolean isPrimaryField(Table metaTable, String fieldName) {
-
-		if (metaTable == null || fieldName == null) {
-			return false;
-		}
-
-		String[] primaryKeys = metaTable.PrimaryKey();
-
-		if (primaryKeys == null || primaryKeys.length == 0) {
-			return false;
-		}
-
-		for (String keyName : primaryKeys) {
-
-			if (keyName.equals(fieldName)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * 获取字段对应的数据列名，除非有特别标注(Column)，否则直接使用字段名
-	 * 
-	 * @param field
-	 * @return
-	 */
-	public static String getColumnName(Field field) {
-
-		return field.getAnnotation(Column.class) == null ? field.getName() : field.getAnnotation(Column.class).name();
-	}
-
-	/**
 	 * 根据结果集信息，构造结果Map。对于此结果集的遍历操作，应该在此方法的宿主内进行。
 	 * 
 	 * @param rs
@@ -428,127 +368,5 @@ public class BeanUtil {
 		}
 
 		return toBean;
-	}
-
-	/**
-	 * 拷贝属性
-	 * 
-	 * @param <T>
-	 * @param fromMap
-	 * @param toBean
-	 * @param ignoreFields
-	 * @param limitFields
-	 * @param typeConverters
-	 */
-	public static <T> T copyProperties(Map<String, Object> fromMap, T toBean, String[] ignoreFields,
-			String[] limitFields, ITypeConverter[] typeConverters) {
-
-		if (fromMap == null || toBean == null) {
-			throw new NullPointerException();
-		}
-
-		Set<String> keys = fromMap.keySet();
-
-		if (keys == null || keys.size() == 0) {
-			return toBean;
-		}
-
-		Field[] fields = toBean.getClass().getDeclaredFields();
-
-		if (fields == null || fields.length == 0) {
-			return toBean;
-		}
-
-		// 为bean的各字段赋值
-		fieldLoop: for (int i = 0, fieldCount = fields.length; i < fieldCount; i++) {
-			String fieldName = fields[i].getName();
-
-			// 跳过静态、常量字段
-			if (isConstField(fields[i])) {
-				continue fieldLoop;
-			}
-
-			// 忽略的字段
-			if (ignoreFields != null) {
-
-				for (String fld : ignoreFields) {
-
-					if (fieldName.equals(fld)) {
-						continue fieldLoop;
-					}
-				}
-			}
-
-			// 限制的字段
-			if (limitFields != null) {
-
-				boolean finded = false;
-				for (String fld : limitFields) {
-
-					if (fieldName.equals(fld)) {
-						finded = true;
-						break;
-					}
-				}
-
-				if (!finded) {
-					continue fieldLoop;
-				}
-			}
-
-			// map key
-			String keyName = null;
-			try {
-				keyName = getColumnName(fields[i]).toUpperCase();
-			} catch (Throwable e) {
-			}
-
-			// setter
-			Method setterMethod = null;
-			try {
-				setterMethod = toBean.getClass().getMethod(getSetterMethodName(fieldName), fields[i].getType());
-			} catch (Throwable e) {
-			}
-
-			// 如果找不到指定字段的setter方法或getter方法，则忽略
-			if (keyName == null || setterMethod == null) {
-				continue;
-			}
-
-			Object fldValue = fromMap.get(keyName);
-			if (typeConverters != null && typeConverters.length > 0) {
-				fldValue = convert(fldValue, fields[i].getType(), typeConverters);
-			}
-
-			try {
-				setterMethod.invoke(toBean, fldValue);
-			} catch (Throwable e) {
-			}
-		}
-
-		return toBean;
-	}
-
-	/**
-	 * 将对象转换为期望的类型
-	 * 
-	 * @param value
-	 * @param targetCls
-	 * @param typeConverters
-	 * @return
-	 */
-	public static Object convert(Object value, Class<?> targetCls, ITypeConverter[] typeConverters) {
-
-		if (typeConverters != null && typeConverters.length > 0) {
-
-			for (ITypeConverter typeConverter : typeConverters) {
-
-				if (typeConverter.accept(value, targetCls)) {
-					return typeConverter.convert(value);
-				}
-			}
-		}
-
-		return value;
 	}
 }
