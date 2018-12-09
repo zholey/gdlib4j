@@ -5,14 +5,14 @@
  */
 package org.gridsofts.swing.wizardClasses;
 
-import java.util.EventObject;
-
+import org.gridsofts.event.Event;
+import org.gridsofts.event.EventType;
 import org.gridsofts.swing.JWizardDialog;
 
-
-
-public class WizardEvent extends EventObject {
+public class WizardEvent extends Event {
 	private static final long serialVersionUID = 1L;
+
+	public static final EventType<WizardEvent> Action = new EventType<>(WizardEvent.class, "WizardAction");
 
 	public WizardEvent(JWizardDialog source) {
 		super(source);

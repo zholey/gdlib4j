@@ -24,6 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
 
 import org.gridsofts.guif.Menubar.Action;
+import org.gridsofts.guif.event.MenuEvent;
 import org.gridsofts.guif.itf.IAuthenticator;
 import org.gridsofts.guif.itf.IDataProvider;
 import org.gridsofts.guif.itf.IMenuListener;
@@ -33,7 +34,6 @@ import org.gridsofts.swing.JCloseableTabbedPane;
 import org.gridsofts.swing.treeClasses.ITreeListener;
 import org.gridsofts.swing.treeClasses.ITreeNode;
 import org.gridsofts.util.Configure;
-import org.gridsofts.util.EventObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class Application extends JFrame implements IMenuListener {
 
 	private IDataProvider<ITreeNode> discoveryProvider = null;
 	private ITreeListener discoveryListener = null;
-
+	
 	/******/
 	private final Session session = new Session();
 
@@ -201,7 +201,7 @@ public class Application extends JFrame implements IMenuListener {
 
 		// 菜单栏
 		setJMenuBar(menubar = Menubar.getInstance());
-		menubar.addMenuListener(this);
+		EvtDispatcher.getInstance().addEventListener(MenuEvent.Action, this);
 
 		// 状态栏
 		getContentPane().add(statusbar = Statusbar.getInstance(), BorderLayout.SOUTH);
@@ -254,7 +254,7 @@ public class Application extends JFrame implements IMenuListener {
 	 */
 	@Override
 	@SuppressWarnings("rawtypes")
-	public void menuItemClicked(EventObject<Menubar.Action> event) {
+	public void menuItemClicked(MenuEvent event) {
 		Object actionObj = event.getPayload().getAction();
 
 		if (actionObj == null) {

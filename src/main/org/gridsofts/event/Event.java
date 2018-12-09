@@ -3,25 +3,29 @@
  * 
  * 未经书面授权，不得擅自复制、影印、储存或散播。
  */
-package org.gridsofts.util;
+package org.gridsofts.event;
 
 /**
  * 通用的事件对象
  * 
  * @author lei
  */
-public class EventObject<T> extends java.util.EventObject {
+public class Event extends java.util.EventObject {
 	private static final long serialVersionUID = 1L;
 	
-	private T payload;
+	private Object payload;
 
-	public EventObject(Object source, T payload) {
+	public Event(Object source) {
+		super(source);
+	}
+	
+	public Event(Object source, Object payload) {
 		super(source);
 		
 		this.payload = payload;
 	}
 	
-	public T getPayload() {
+	public Object getPayload() {
 		return payload;
 	}
 }

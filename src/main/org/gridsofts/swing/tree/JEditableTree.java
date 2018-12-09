@@ -9,9 +9,10 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.gridsofts.event.Event;
 import org.gridsofts.swing.treeClasses.DefaultCellRenderer;
 import org.gridsofts.swing.treeClasses.ITreeNode;
-import org.gridsofts.util.EventObject;
+import org.gridsofts.swing.treeClasses.TreeEvent;
 
 /**
  * 可编辑的树
@@ -26,7 +27,7 @@ public class JEditableTree extends AbstractTree implements TreeModelListener {
 
 		setRootVisible(false);
 		setCellRenderer(new DefaultCellRenderer(ITreeNode.class));
-		
+
 		if (editable) {
 			setEditable(true);
 			setDragEnabled(true);
@@ -39,15 +40,15 @@ public class JEditableTree extends AbstractTree implements TreeModelListener {
 
 	@Override
 	public void treeNodesChanged(TreeModelEvent evt) {
-		
+
 		DefaultMutableTreeNode selectedMutableNode = getSelectedMutableNode();
 
 		if (selectedMutableNode != null && selectedTreeNode != null) {
-			
+
 			selectedTreeNode.setName(selectedMutableNode.getUserObject().toString());
 			selectedMutableNode.setUserObject(selectedTreeNode);
 
-			evtDispatcher.dispatchEvent("onTreeNodeChanged", new EventObject<>(this, selectedTreeNode));
+			evtDispatcher.dispatchEvent(TreeEvent.Action, "onTreeNodeChanged", new Event(this, selectedTreeNode));
 		}
 	}
 

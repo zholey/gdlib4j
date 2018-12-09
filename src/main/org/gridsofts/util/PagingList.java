@@ -9,9 +9,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EventListener;
-import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
+
+import org.gridsofts.event.Event;
+import org.gridsofts.event.EventDispatcher;
+import org.gridsofts.event.EventType;
 
 /**
  * 分页页面集
@@ -23,7 +26,7 @@ import java.util.List;
 public class PagingList<E> extends ArrayList<E> {
 	private static final long serialVersionUID = 1L;
 
-	private EventDispatcher<PagingListener, PagingEvent> dispatcher; // 事件派发器
+	private EventDispatcher evtDispatcher; // 事件派发器
 
 	private int pageCount; // 总页数
 	private int pageNum; // 页码
@@ -51,7 +54,7 @@ public class PagingList<E> extends ArrayList<E> {
 	 * @param pageCapacity
 	 */
 	public PagingList(int pageCapacity) {
-		dispatcher = new EventDispatcher<>();
+		evtDispatcher = new EventDispatcher();
 
 		setPageCapacity(pageCapacity);
 	}
@@ -84,7 +87,7 @@ public class PagingList<E> extends ArrayList<E> {
 	 * @param listener
 	 */
 	public void addEventListener(PagingListener listener) {
-		dispatcher.addEventListener(listener);
+		evtDispatcher.addEventListener(PagingEvent.Action, listener);
 	}
 
 	/**
@@ -93,7 +96,7 @@ public class PagingList<E> extends ArrayList<E> {
 	 * @param listener
 	 */
 	public void removeEventListener(PagingListener listener) {
-		dispatcher.removeEventListener(listener);
+		evtDispatcher.removeEventListener(listener);
 	}
 
 	/**
@@ -131,7 +134,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 
 		return resultCode;
 	}
@@ -143,7 +146,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 
 		return resultCode;
 
@@ -156,7 +159,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 
 		return resultCode;
 	}
@@ -168,7 +171,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 	}
 
 	@Override
@@ -214,7 +217,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 
 		return e;
 	}
@@ -226,7 +229,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 
 		return resultCode;
 	}
@@ -238,7 +241,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 	}
 
 	@Override
@@ -251,7 +254,7 @@ public class PagingList<E> extends ArrayList<E> {
 		E resultObj = super.set(getRealIndex(index), e);
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("dataChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 
 		return resultObj;
 	}
@@ -350,7 +353,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("pageChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "pageChanged", new PagingEvent(this));
 
 		return this;
 	}
@@ -375,7 +378,7 @@ public class PagingList<E> extends ArrayList<E> {
 		refresh();
 
 		// 发送数据更新事件
-		dispatcher.dispatchEvent("pageChanged", new PagingEvent(this));
+		evtDispatcher.dispatchEvent(PagingEvent.Action, "pageChanged", new PagingEvent(this));
 
 		return this;
 	}
@@ -425,8 +428,10 @@ public class PagingList<E> extends ArrayList<E> {
 	 * @author Lei
 	 * 
 	 */
-	public static class PagingEvent extends EventObject {
+	public static class PagingEvent extends Event {
 		private static final long serialVersionUID = 1L;
+
+		public static final EventType<PagingEvent> Action = new EventType<>(PagingEvent.class, "PagingAction");
 
 		public PagingEvent(Object source) {
 			super(source);

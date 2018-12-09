@@ -7,7 +7,7 @@ package org.gridsofts.guif.itf;
 
 import java.util.EventListener;
 
-import org.gridsofts.util.EventObject;
+import org.gridsofts.guif.event.StateEvent;
 
 /**
  * @author lei
@@ -19,5 +19,5 @@ public interface IStateListener extends EventListener {
 	 * 
 	 * @param event
 	 */
-	public void statusMsg(EventObject<String> event);
+	public void statusMsg(StateEvent event);
 }

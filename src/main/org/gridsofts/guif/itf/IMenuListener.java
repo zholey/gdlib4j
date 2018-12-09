@@ -7,8 +7,7 @@ package org.gridsofts.guif.itf;
 
 import java.util.EventListener;
 
-import org.gridsofts.guif.Menubar;
-import org.gridsofts.util.EventObject;
+import org.gridsofts.guif.event.MenuEvent;
 
 /**
  * 定义菜单栏可能抛出的所有事件
@@ -17,5 +16,5 @@ import org.gridsofts.util.EventObject;
  */
 public interface IMenuListener extends EventListener {
 
-	void menuItemClicked(EventObject<Menubar.Action> event);
+	void menuItemClicked(MenuEvent event);
 }

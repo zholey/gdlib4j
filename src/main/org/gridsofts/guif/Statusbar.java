@@ -13,9 +13,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.gridsofts.guif.event.StateEvent;
 import org.gridsofts.guif.itf.IStateListener;
 import org.gridsofts.swing.border.ScatterLineBorder;
-import org.gridsofts.util.EventObject;
 
 /**
  * 状态栏
@@ -47,7 +47,7 @@ public class Statusbar extends JPanel implements IStateListener {
 	}
 
 	@Override
-	public void statusMsg(EventObject<String> event) {
+	public void statusMsg(StateEvent event) {
 		statusLab.setText(event.getPayload());
 	}
 }

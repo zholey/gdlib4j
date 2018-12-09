@@ -22,7 +22,6 @@ import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.EventListener;
-import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,10 +35,12 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputAdapter;
 
+import org.gridsofts.event.Event;
+import org.gridsofts.event.EventDispatcher;
+import org.gridsofts.event.EventType;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.border.ScatterLineBorder;
 import org.gridsofts.util.DateTime;
-import org.gridsofts.util.EventDispatcher;
 
 public class Kalendar extends JComponent {
 	private static final long serialVersionUID = 1L;
@@ -53,7 +54,7 @@ public class Kalendar extends JComponent {
 	public static final Color KTTBC = new Color(0xb8cfe5);
 	public static final Color KTTCBC = new Color(0xffffe1);
 
-	private EventDispatcher<KalendarListener, KalendarEvent> kalendarES;
+	private EventDispatcher kalendarES;
 	private Set<Date> underLineDates;
 
 	private JPanel kalen;
@@ -70,8 +71,8 @@ public class Kalendar extends JComponent {
 	static {
 		try {
 			UIManager.put("ToolTipUI", "org.gridsofts.swing.plaf.MultiLineToolTipUI");
-			UIManager.put("org.gridsofts.swing.plaf.MultiLineToolTipUI", Class
-					.forName("org.gridsofts.swing.plaf.MultiLineToolTipUI"));
+			UIManager.put("org.gridsofts.swing.plaf.MultiLineToolTipUI",
+					Class.forName("org.gridsofts.swing.plaf.MultiLineToolTipUI"));
 		} catch (ClassNotFoundException cnfe) {
 		}
 	}
@@ -80,7 +81,7 @@ public class Kalendar extends JComponent {
 
 		underLineDates = new HashSet<>();
 
-		kalendarES = new EventDispatcher<>();
+		kalendarES = new EventDispatcher();
 
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createLineBorder(new Color(0x1b376c)));
@@ -91,8 +92,8 @@ public class Kalendar extends JComponent {
 
 		// 日历
 		kalen = new JPanel(new BorderLayout());
-		kalen.setBorder(new ScatterLineBorder(ScatterLineBorder.LEFT | ScatterLineBorder.BOTTOM
-				| ScatterLineBorder.RIGHT, Color.white));
+		kalen.setBorder(new ScatterLineBorder(
+				ScatterLineBorder.LEFT | ScatterLineBorder.BOTTOM | ScatterLineBorder.RIGHT, Color.white));
 		add(kalen, BorderLayout.CENTER);
 
 		// 日历头
@@ -156,7 +157,7 @@ public class Kalendar extends JComponent {
 
 		// 抛出日期改变事件
 		if (isSendChangedEvent) {
-			kalendarES.dispatchEvent("onChanged", new KalendarEvent(this, curDate));
+			kalendarES.dispatchEvent(KalendarEvent.Action, "onChanged", new KalendarEvent(this, curDate));
 		}
 	}
 
@@ -216,10 +217,10 @@ public class Kalendar extends JComponent {
 	 * @param listener
 	 */
 	public void addKalendarListener(KalendarListener listener) {
-		kalendarES.addEventListener(listener);
+		kalendarES.addEventListener(KalendarEvent.Action, listener);
 
 		// 抛出日期改变事件
-		kalendarES.dispatchEvent(listener, "onChanged", new KalendarEvent(this, curDate));
+		kalendarES.dispatchEvent(listener, "onChanged", new KalendarEvent(this, curDate), false);
 	}
 
 	/**
@@ -307,9 +308,9 @@ public class Kalendar extends JComponent {
 
 			g2.setFont(Resources.Font.get("Impact.ttf").deriveFont(Font.BOLD, 78));
 			FontMetrics fmM = g2.getFontMetrics();
-			g2.drawString(String.valueOf(curDate.getMonth()), getSize().width / 2
-					- fmM.stringWidth(String.valueOf(curDate.getMonth())) / 2, fmY.getHeight() - 5
-					+ (getSize().height - 30) / 2 - fmM.getHeight() / 2 + fmM.getAscent());
+			g2.drawString(String.valueOf(curDate.getMonth()),
+					getSize().width / 2 - fmM.stringWidth(String.valueOf(curDate.getMonth())) / 2,
+					fmY.getHeight() - 5 + (getSize().height - 30) / 2 - fmM.getHeight() / 2 + fmM.getAscent());
 
 			g2.setColor(c);
 			g2.setFont(f);
@@ -515,11 +516,12 @@ public class Kalendar extends JComponent {
 					}
 
 					// 抛出日期改变事件
-					kalendarES.dispatchEvent("onChanged", new KalendarEvent(this, curDate));
+					kalendarES.dispatchEvent(KalendarEvent.Action, "onChanged", new KalendarEvent(this, curDate));
 
 					// 双击事件
 					if (MouseEvent.BUTTON1 == event.getButton() && event.getClickCount() == 2) {
-						kalendarES.dispatchEvent("onDblClicked", new KalendarEvent(this, curDate));
+						kalendarES.dispatchEvent(KalendarEvent.Action, "onDblClicked",
+								new KalendarEvent(this, curDate));
 					}
 				}
 			});
@@ -567,20 +569,18 @@ public class Kalendar extends JComponent {
 	 * @author zholey
 	 * 
 	 */
-	public static class KalendarEvent extends EventObject {
+	public static class KalendarEvent extends Event {
 		private static final long serialVersionUID = 1L;
 
-		private Date date;
+		public static final EventType<KalendarEvent> Action = new EventType<>(KalendarEvent.class, "KalendarAction");
 
 		public KalendarEvent(Object source, Date d) {
-			super(source);
-
-			date = new Date();
-			date.setDate(d);
+			super(source, d);
 		}
 
-		public Date getDate() {
-			return date;
+		@Override
+		public Date getPayload() {
+			return (Date) super.getPayload();
 		}
 	}
 
@@ -726,8 +726,8 @@ public class Kalendar extends JComponent {
 
 			format = format.replaceAll("yyyy", String.valueOf(getYear()));
 			format = format.replaceAll("mm", getMonth() < 10 ? ("0" + getMonth()) : String.valueOf(getMonth()));
-			format = format.replaceAll("dd", getDayOfMonth() < 10 ? ("0" + getDayOfMonth()) : String
-					.valueOf(getDayOfMonth()));
+			format = format.replaceAll("dd",
+					getDayOfMonth() < 10 ? ("0" + getDayOfMonth()) : String.valueOf(getDayOfMonth()));
 
 			return format;
 		}
@@ -768,21 +768,20 @@ public class Kalendar extends JComponent {
 		/**
 		 * 农历日期资料库 1900 - 2049
 		 */
-		private static final int[] lunarInfo = { 0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554,
-				0x056a0, 0x09ad0, 0x055d2, 0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2,
-				0x095b0, 0x14977, 0x04970, 0x0a4b0, 0x0b4b5, 0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2,
-				0x04970, 0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3, 0x092e0, 0x1c8d7, 0x0c950,
-				0x0d4a0, 0x1d8a6, 0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0b557, 0x06ca0,
-				0x0b550, 0x15355, 0x04da0, 0x0a5b0, 0x14573, 0x052b0, 0x0a9a8, 0x0e950, 0x06aa0, 0x0aea6, 0x0ab50,
-				0x04b60, 0x0aae4, 0x0a570, 0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0, 0x096d0, 0x04dd5, 0x04ad0,
-				0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b6a0, 0x195a6, 0x095b0, 0x049b0, 0x0a974, 0x0a4b0,
-				0x0b27a, 0x06a50, 0x06d40, 0x0af46, 0x0ab60, 0x09570, 0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50,
-				0x06b58, 0x055c0, 0x0ab60, 0x096d5, 0x092e0, 0x0c960, 0x0d954, 0x0d4a0, 0x0da50, 0x07552, 0x056a0,
-				0x0abb7, 0x025d0, 0x092d0, 0x0cab5, 0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50, 0x055d9, 0x04ba0, 0x0a5b0,
-				0x15176, 0x052b0, 0x0a930, 0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260,
-				0x0ea65, 0x0d530, 0x05aa0, 0x076a3, 0x096d0, 0x04bd7, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520,
-				0x0dd45, 0x0b5a0, 0x056d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0,
-				0x14b63 };
+		private static final int[] lunarInfo = { 0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0,
+				0x09ad0, 0x055d2, 0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2, 0x095b0,
+				0x14977, 0x04970, 0x0a4b0, 0x0b4b5, 0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970,
+				0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3, 0x092e0, 0x1c8d7, 0x0c950, 0x0d4a0,
+				0x1d8a6, 0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0b557, 0x06ca0, 0x0b550,
+				0x15355, 0x04da0, 0x0a5b0, 0x14573, 0x052b0, 0x0a9a8, 0x0e950, 0x06aa0, 0x0aea6, 0x0ab50, 0x04b60,
+				0x0aae4, 0x0a570, 0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0, 0x096d0, 0x04dd5, 0x04ad0, 0x0a4d0,
+				0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b6a0, 0x195a6, 0x095b0, 0x049b0, 0x0a974, 0x0a4b0, 0x0b27a,
+				0x06a50, 0x06d40, 0x0af46, 0x0ab60, 0x09570, 0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06b58,
+				0x055c0, 0x0ab60, 0x096d5, 0x092e0, 0x0c960, 0x0d954, 0x0d4a0, 0x0da50, 0x07552, 0x056a0, 0x0abb7,
+				0x025d0, 0x092d0, 0x0cab5, 0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50, 0x055d9, 0x04ba0, 0x0a5b0, 0x15176,
+				0x052b0, 0x0a930, 0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260, 0x0ea65,
+				0x0d530, 0x05aa0, 0x076a3, 0x096d0, 0x04bd7, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520, 0x0dd45,
+				0x0b5a0, 0x056d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0, 0x14b63 };
 
 		private static final String[] Gan = { "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸" };
 		private static final String[] Zhi = { "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥" };
@@ -870,10 +869,11 @@ public class Kalendar extends JComponent {
 			zhDate += lDate.getMonth() == 1 ? "正月 " : nStr1[lDate.getMonth()] + "月 ";
 
 			zhDate += lDate.getDayOfMonth() <= 10 ? "初" + nStr1[lDate.getDayOfMonth()]
-					: lDate.getDayOfMonth() < 20 ? "十" + nStr1[(int) lDate.getDayOfMonth() % 10] : 20 < lDate
-							.getDayOfMonth()
-							&& lDate.getDayOfMonth() < 30 ? "廿" + nStr1[(int) lDate.getDayOfMonth() % 10]
-							: nStr1[(int) lDate.getDayOfMonth() / 10] + "十" + nStr1[(int) lDate.getDayOfMonth() % 10];
+					: lDate.getDayOfMonth() < 20 ? "十" + nStr1[(int) lDate.getDayOfMonth() % 10]
+							: 20 < lDate.getDayOfMonth() && lDate.getDayOfMonth() < 30
+									? "廿" + nStr1[(int) lDate.getDayOfMonth() % 10]
+									: nStr1[(int) lDate.getDayOfMonth() / 10] + "十"
+											+ nStr1[(int) lDate.getDayOfMonth() % 10];
 
 			return zhDate;
 		}

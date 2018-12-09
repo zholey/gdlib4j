@@ -20,7 +20,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.EventListener;
-import java.util.EventObject;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -31,21 +30,23 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.JToolBar.Separator;
+import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
+import org.gridsofts.event.Event;
+import org.gridsofts.event.EventDispatcher;
+import org.gridsofts.event.EventType;
 import org.gridsofts.resource.Resources;
 import org.gridsofts.swing.Kalendar.KalendarEvent;
 import org.gridsofts.swing.Kalendar.KalendarListener;
 import org.gridsofts.swing.border.ScatterLineBorder;
 import org.gridsofts.util.DateTime;
-import org.gridsofts.util.EventDispatcher;
 
 public class JDateField extends JPanel {
 	private static final long serialVersionUID = 1L;
-	
-	private EventDispatcher<DateFieldListener, DateFieldEvent> dispatcher;
+
+	private EventDispatcher evtDispatcher;
 
 	private DateTime selectedDate;
 	private String formatStr;
@@ -68,8 +69,8 @@ public class JDateField extends JPanel {
 
 	public JDateField(DateTime defaultValue, String formatStr) {
 		super(new FlowLayout(FlowLayout.LEFT));
-		
-		dispatcher = new EventDispatcher<>();
+
+		evtDispatcher = new EventDispatcher();
 
 		this.selectedDate = defaultValue == null ? DateTime.getCurrentTime() : defaultValue;
 		this.formatStr = formatStr;
@@ -99,7 +100,7 @@ public class JDateField extends JPanel {
 	}
 
 	public void addDateFieldListener(DateFieldListener listener) {
-		dispatcher.addEventListener(listener);
+		evtDispatcher.addEventListener(DateFieldEvent.Action, listener);
 	}
 
 	private void initComponent() {
@@ -180,8 +181,8 @@ public class JDateField extends JPanel {
 		// 日历
 		kalen = new Kalendar();
 		kalen.setBorder(BorderFactory.createEmptyBorder());
-		kalen.setSelectedDate(new Kalendar.Date(selectedDate.getYear(), selectedDate.getMonth(), selectedDate
-				.getDayOfMonth()));
+		kalen.setSelectedDate(
+				new Kalendar.Date(selectedDate.getYear(), selectedDate.getMonth(), selectedDate.getDayOfMonth()));
 		kalen.addKalendarListener(new KalendarListener() {
 
 			@Override
@@ -269,14 +270,14 @@ public class JDateField extends JPanel {
 		if (isToday) {
 			selectedDate = new DateTime();
 		} else {
-			selectedDate = new DateTime(date.getYear(), date.getMonth(), date.getDayOfMonth(), hourChoose
-					.getSelectedIndex(), minuteChoose.getSelectedIndex(), 0);
+			selectedDate = new DateTime(date.getYear(), date.getMonth(), date.getDayOfMonth(),
+					hourChoose.getSelectedIndex(), minuteChoose.getSelectedIndex(), 0);
 		}
 
 		dateField.setText(selectedDate.toString(formatStr));
-		
+
 		// 派发valueChanged事件
-		dispatcher.dispatchEvent("valueChanged", new DateFieldEvent(this));
+		evtDispatcher.dispatchEvent(DateFieldEvent.Action, "valueChanged", new DateFieldEvent(this));
 
 		// 关闭窗口
 		chooseDialog.dispose();
@@ -295,7 +296,7 @@ public class JDateField extends JPanel {
 	 * @author zholey
 	 * 
 	 */
-	class HourChooser extends JComboBox {
+	class HourChooser extends JComboBox<String> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -316,7 +317,7 @@ public class JDateField extends JPanel {
 	 * @author zholey
 	 * 
 	 */
-	class MinuteChooser extends JComboBox {
+	class MinuteChooser extends JComboBox<String> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -347,8 +348,10 @@ public class JDateField extends JPanel {
 	 * @author Lei
 	 * 
 	 */
-	public static class DateFieldEvent extends EventObject {
+	public static class DateFieldEvent extends Event {
 		private static final long serialVersionUID = 1L;
+
+		public static final EventType<DateFieldEvent> Action = new EventType<>(DateFieldEvent.class, "DateFieldAction");
 
 		public DateFieldEvent(Object source) {
 			super(source);

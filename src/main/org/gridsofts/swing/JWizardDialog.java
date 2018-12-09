@@ -22,10 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 
+import org.gridsofts.event.EventDispatcher;
 import org.gridsofts.swing.wizardClasses.IWizardListener;
 import org.gridsofts.swing.wizardClasses.WizardEvent;
 import org.gridsofts.swing.wizardClasses.WizardStep;
-import org.gridsofts.util.EventDispatcher;
 
 /**
  * 向导面板
@@ -35,7 +35,7 @@ import org.gridsofts.util.EventDispatcher;
 public abstract class JWizardDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 
-	private EventDispatcher<IWizardListener, WizardEvent> eventDispatcher;
+	private EventDispatcher evtDispatcher;
 
 	private JToolBar toolBar;
 	private JPanel contentPane;
@@ -57,7 +57,7 @@ public abstract class JWizardDialog extends JDialog {
 		super(owner, title, true, width, height);
 		this.title = title;
 
-		eventDispatcher = new EventDispatcher<>();
+		evtDispatcher = new EventDispatcher();
 
 		history = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public abstract class JWizardDialog extends JDialog {
 
 			@Override
 			public void windowClosing(WindowEvent evt) {
-				eventDispatcher.dispatchEvent("wizardCancel", new WizardEvent(JWizardDialog.this));
+				evtDispatcher.dispatchEvent(WizardEvent.Action, "wizardCancel", new WizardEvent(JWizardDialog.this));
 			}
 		});
 
@@ -78,7 +78,7 @@ public abstract class JWizardDialog extends JDialog {
 	}
 
 	public void addWizardListener(IWizardListener l) {
-		eventDispatcher.addEventListener(l);
+		evtDispatcher.addEventListener(WizardEvent.Action, l);
 	}
 
 	private void initCtrlBar() {
@@ -141,7 +141,8 @@ public abstract class JWizardDialog extends JDialog {
 			public void actionPerformed(ActionEvent event) {
 
 				if (currentStep != null && currentStep.preComplete() && preComplete()) {
-					eventDispatcher.dispatchEvent("wizardComplete", new WizardEvent(JWizardDialog.this));
+					evtDispatcher.dispatchEvent(WizardEvent.Action, "wizardComplete",
+							new WizardEvent(JWizardDialog.this));
 					dispose();
 				}
 			}
@@ -155,7 +156,7 @@ public abstract class JWizardDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				eventDispatcher.dispatchEvent("wizardCancel", new WizardEvent(JWizardDialog.this));
+				evtDispatcher.dispatchEvent(WizardEvent.Action, "wizardCancel", new WizardEvent(JWizardDialog.this));
 				dispose();
 			}
 		});
@@ -232,7 +233,7 @@ public abstract class JWizardDialog extends JDialog {
 		contentPane.updateUI();
 
 		// 抛出步骤变更事件
-		eventDispatcher.dispatchEvent("stepChanged", new WizardEvent(this));
+		evtDispatcher.dispatchEvent(WizardEvent.Action, "stepChanged", new WizardEvent(this));
 	}
 
 	public List<WizardStep> getStepList() {

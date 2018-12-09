@@ -17,10 +17,11 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.gridsofts.event.EventDispatcher;
+import org.gridsofts.event.Event;
 import org.gridsofts.swing.treeClasses.ITreeListener;
 import org.gridsofts.swing.treeClasses.ITreeNode;
-import org.gridsofts.util.EventDispatcher;
-import org.gridsofts.util.EventObject;
+import org.gridsofts.swing.treeClasses.TreeEvent;
 
 /**
  * 抽象树类；提供一些基础的便利方法
@@ -30,14 +31,14 @@ import org.gridsofts.util.EventObject;
 public abstract class AbstractTree extends JTree implements TreeSelectionListener {
 	private static final long serialVersionUID = 1L;
 
-	protected EventDispatcher<ITreeListener, EventObject<ITreeNode>> evtDispatcher;
+	protected EventDispatcher evtDispatcher;
 
 	protected ITreeNode selectedTreeNode;
 
 	public AbstractTree() {
 		super(new DefaultTreeModel(new DefaultMutableTreeNode("[ROOT]")));
 
-		evtDispatcher = new EventDispatcher<>();
+		evtDispatcher = new EventDispatcher();
 
 		setRowHeight(20);
 
@@ -54,7 +55,7 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	 * @param listener
 	 */
 	public void addTreeListener(ITreeListener listener) {
-		evtDispatcher.addEventListener(listener);
+		evtDispatcher.addEventListener(TreeEvent.Action, listener);
 	}
 
 	/**
@@ -322,7 +323,7 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	@Override
 	public void valueChanged(TreeSelectionEvent evt) {
 
-		evtDispatcher.dispatchEvent("onSelectedNode",
-				new EventObject<>(this, selectedTreeNode = getSelectedTreeNode()));
+		evtDispatcher.dispatchEvent(TreeEvent.Action, "onSelectedNode",
+				new Event(this, selectedTreeNode = getSelectedTreeNode()));
 	}
 }

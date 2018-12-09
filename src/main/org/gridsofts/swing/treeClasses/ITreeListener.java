@@ -7,8 +7,6 @@ package org.gridsofts.swing.treeClasses;
 
 import java.util.EventListener;
 
-import org.gridsofts.util.EventObject;
-
 /**
  * 树监听
  * 
@@ -21,12 +19,12 @@ public interface ITreeListener extends EventListener {
 	 * 
 	 * @param event
 	 */
-	public void onSelectedNode(EventObject<ITreeNode> event);
+	public void onSelectedNode(TreeEvent event);
 
 	/**
 	 * 节点发生更改
 	 * 
 	 * @param event
 	 */
-	public void onTreeNodeChanged(EventObject<ITreeNode> event);
+	public void onTreeNodeChanged(TreeEvent event);
 }

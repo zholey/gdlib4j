@@ -15,9 +15,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import org.gridsofts.guif.itf.IMenuListener;
-import org.gridsofts.util.EventDispatcher;
-import org.gridsofts.util.EventObject;
+import org.gridsofts.guif.event.MenuEvent;
 
 /**
  * 系统菜单栏
@@ -35,13 +33,9 @@ public class Menubar extends JMenuBar {
 		return SingletonHolder.instance;
 	}
 
-	/** 事件驱动 器 */
-	private EventDispatcher<IMenuListener, EventObject<Action>> evtDispatcher;
-
 	private Map<String, JMenu> menuNameMap = new HashMap<>();
 
 	private Menubar() {
-		evtDispatcher = new EventDispatcher<>();
 	}
 
 	public JMenuItem addMenuItem(String menuName, String itemName, Action action) {
@@ -73,10 +67,6 @@ public class Menubar extends JMenuBar {
 		return menu;
 	}
 
-	public void addMenuListener(IMenuListener listener) {
-		evtDispatcher.addEventListener(listener);
-	}
-
 	private class MenuItemActionAdapter implements ActionListener {
 
 		private Action action;
@@ -87,7 +77,8 @@ public class Menubar extends JMenuBar {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			evtDispatcher.dispatchEvent("menuItemClicked", new EventObject<>(e.getSource(), action));
+			EvtDispatcher.getInstance().dispatchEvent(MenuEvent.Action, "menuItemClicked",
+					new MenuEvent(e.getSource(), action));
 		}
 	}
 
@@ -112,11 +103,11 @@ public class Menubar extends JMenuBar {
 			this.action = action;
 
 			// check parameters
-			
+
 			if (type == null) {
 				throw new IllegalArgumentException("type should be not null");
 			}
-			
+
 			if (action == null) {
 				throw new IllegalArgumentException("action should be not null");
 			}
