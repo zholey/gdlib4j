@@ -46,13 +46,19 @@ public class EventType<T> implements Serializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return (eventClass != null && name != null) ? (eventClass.getName() + name).hashCode() : super.hashCode();
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	public boolean equals(Object obj) {
 
 		if (obj != null && obj instanceof EventType) {
+			EventType target = (EventType) obj;
 
-			return (eventClass != null && name != null && eventClass.equals(((EventType) obj).getEventClass())
-					&& name.equals(((EventType) obj).getName()));
+			return (eventClass != null && name != null && eventClass.equals(target.getEventClass())
+					&& name.equals(target.getName()));
 		}
 
 		return false;

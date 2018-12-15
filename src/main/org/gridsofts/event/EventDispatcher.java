@@ -97,6 +97,28 @@ public class EventDispatcher implements Serializable {
 	 * 
 	 * @param eventType
 	 *            事件类型
+	 */
+	public void dispatchNotice(EventType eventType) {
+		
+		listenerRegMapLock.lock();
+		try {
+			if (!listenerRegMap.isEmpty()) {
+				listenerRegMap.get(eventType).stream().filter(listener -> {
+					return listener instanceof ActionListener;
+				}).forEach(listener -> {
+					dispatchAction((ActionListener) listener, null, false);
+				});
+			}
+		} finally {
+			listenerRegMapLock.unlock();
+		}
+	}
+
+	/**
+	 * 同步派发通知。
+	 * 
+	 * @param eventType
+	 *            事件类型
 	 * @param eventName
 	 *            事件名称（即：方法名称）
 	 */
@@ -107,6 +129,28 @@ public class EventDispatcher implements Serializable {
 			if (!listenerRegMap.isEmpty()) {
 				listenerRegMap.get(eventType).forEach(listener -> {
 					dispatchEvent(listener, eventName, null, false);
+				});
+			}
+		} finally {
+			listenerRegMapLock.unlock();
+		}
+	}
+	
+	/**
+	 * 异步派发通知。
+	 * 
+	 * @param eventType
+	 *            事件类型
+	 */
+	public void asyncDispatchNotice(EventType eventType) {
+		
+		listenerRegMapLock.lock();
+		try {
+			if (!listenerRegMap.isEmpty()) {
+				listenerRegMap.get(eventType).stream().filter(listener -> {
+					return listener instanceof ActionListener;
+				}).forEach(listener -> {
+					dispatchAction((ActionListener) listener, null, true);
 				});
 			}
 		} finally {
@@ -129,6 +173,30 @@ public class EventDispatcher implements Serializable {
 			if (!listenerRegMap.isEmpty()) {
 				listenerRegMap.get(eventType).forEach(listener -> {
 					dispatchEvent(listener, eventName, null, true);
+				});
+			}
+		} finally {
+			listenerRegMapLock.unlock();
+		}
+	}
+	
+	/**
+	 * 同步派发事件。
+	 * 
+	 * @param eventType
+	 *            事件类型
+	 * @param event
+	 *            要派发的事件。
+	 */
+	public void dispatchEvent(EventType eventType, Event event) {
+		
+		listenerRegMapLock.lock();
+		try {
+			if (!listenerRegMap.isEmpty()) {
+				listenerRegMap.get(eventType).stream().filter(listener -> {
+					return listener instanceof ActionListener;
+				}).forEach(listener -> {
+					dispatchAction((ActionListener) listener, event, false);
 				});
 			}
 		} finally {
@@ -159,6 +227,30 @@ public class EventDispatcher implements Serializable {
 			listenerRegMapLock.unlock();
 		}
 	}
+	
+	/**
+	 * 异步派发事件。
+	 * 
+	 * @param eventType
+	 *            事件类型
+	 * @param event
+	 *            要派发的事件。
+	 */
+	public void asyncDispatchEvent(EventType eventType, Event event) {
+		
+		listenerRegMapLock.lock();
+		try {
+			if (!listenerRegMap.isEmpty()) {
+				listenerRegMap.get(eventType).stream().filter(listener -> {
+					return listener instanceof ActionListener;
+				}).forEach(listener -> {
+					dispatchAction((ActionListener) listener, event, true);
+				});
+			}
+		} finally {
+			listenerRegMapLock.unlock();
+		}
+	}
 
 	/**
 	 * 异步派发事件。
@@ -183,6 +275,16 @@ public class EventDispatcher implements Serializable {
 			listenerRegMapLock.unlock();
 		}
 	}
+	
+	/**
+	 * 向指定的收听者同步派发通知。
+	 * 
+	 * @param listener
+	 *            指定的收听者
+	 */
+	public void dispatchNotice(ActionListener listener) {
+		dispatchAction(listener, null, false);
+	}
 
 	/**
 	 * 向指定的收听者同步派发通知。
@@ -194,6 +296,18 @@ public class EventDispatcher implements Serializable {
 	 */
 	public void dispatchNotice(EventListener listener, String eventName) {
 		dispatchEvent(listener, eventName, null, false);
+	}
+	
+	/**
+	 * 向指定的收听者派发通知。
+	 * 
+	 * @param listener
+	 *            指定的收听者
+	 * @param isAsync
+	 *            是否异步发送
+	 */
+	public void asyncDispatchAction(ActionListener listener) {
+		dispatchAction(listener, null, true);
 	}
 
 	/**
@@ -262,6 +376,35 @@ public class EventDispatcher implements Serializable {
 				}
 			} catch (Throwable t) {
 			}
+		}
+	}
+	
+	/**
+	 * 向指定的收听者派发事件。
+	 * 
+	 * @param listener
+	 *            指定的收听者
+	 * @param event
+	 *            要派发的事件。
+	 * @param isAsync
+	 *            是否异步发送
+	 * 
+	 */
+	public void dispatchAction(ActionListener listener, Event event, boolean isAsync) {
+		
+		if (isAsync) {
+			
+			// 异步派发事件
+			new Thread(new Runnable() {
+				
+				@Override
+				public synchronized void run() {
+					listener.actionPerformed(event);
+				}
+			}).start();
+			
+		} else {
+			listener.actionPerformed(event);
 		}
 	}
 }
