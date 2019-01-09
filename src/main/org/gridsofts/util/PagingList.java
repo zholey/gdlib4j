@@ -23,10 +23,12 @@ import org.gridsofts.event.EventType;
  * 
  * @param <E>
  */
-public class PagingList<E> extends ArrayList<E> {
+public class PagingList<E> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private EventDispatcher evtDispatcher; // 事件派发器
+	
+	private ArrayList<E> actualList = new ArrayList<>();
 
 	private int pageCount; // 总页数
 	private int pageNum; // 页码
@@ -127,9 +129,8 @@ public class PagingList<E> extends ArrayList<E> {
 		return index + (getPageNum() - 1) * getPageCapacity();
 	}
 
-	@Override
 	public boolean add(E e) {
-		boolean resultCode = super.add(e);
+		boolean resultCode = actualList.add(e);
 
 		refresh();
 
@@ -139,9 +140,8 @@ public class PagingList<E> extends ArrayList<E> {
 		return resultCode;
 	}
 
-	@Override
 	public boolean addAll(Collection<? extends E> collection) {
-		boolean resultCode = super.addAll(collection);
+		boolean resultCode = actualList.addAll(collection);
 
 		refresh();
 
@@ -152,9 +152,8 @@ public class PagingList<E> extends ArrayList<E> {
 
 	}
 
-	@Override
 	public boolean addAll(int start, Collection<? extends E> collection) {
-		boolean resultCode = super.addAll(start, collection);
+		boolean resultCode = actualList.addAll(start, collection);
 
 		refresh();
 
@@ -164,9 +163,8 @@ public class PagingList<E> extends ArrayList<E> {
 		return resultCode;
 	}
 
-	@Override
 	public void clear() {
-		super.clear();
+		actualList.clear();
 
 		refresh();
 
@@ -174,19 +172,17 @@ public class PagingList<E> extends ArrayList<E> {
 		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
 	}
 
-	@Override
 	public E get(int index) {
 
 		if (index < 0 || index >= getPageCapacity() || getRealIndex(index) >= getRealSize()) {
 			throw new IndexOutOfBoundsException("index : " + index);
 		}
 
-		return super.get(getRealIndex(index));
+		return actualList.get(getRealIndex(index));
 	}
 
-	@Override
 	public int indexOf(Object e) {
-		int index = super.indexOf(e);
+		int index = actualList.indexOf(e);
 
 		// 限定在当前页
 		if (index < (getPageNum() - 1) * getPageCapacity() || index >= getPageNum() * getPageCapacity()) {
@@ -197,9 +193,8 @@ public class PagingList<E> extends ArrayList<E> {
 		return index - (getPageNum() - 1) * getPageCapacity();
 	}
 
-	@Override
 	public int lastIndexOf(Object e) {
-		int index = super.lastIndexOf(e);
+		int index = actualList.lastIndexOf(e);
 
 		// 限定在当前页
 		if (index < (getPageNum() - 1) * getPageCapacity() || index >= getPageNum() * getPageCapacity()) {
@@ -210,9 +205,8 @@ public class PagingList<E> extends ArrayList<E> {
 		return index - (getPageNum() - 1) * getPageCapacity();
 	}
 
-	@Override
 	public E remove(int index) {
-		E e = super.remove(index);
+		E e = actualList.remove(index);
 
 		refresh();
 
@@ -222,9 +216,8 @@ public class PagingList<E> extends ArrayList<E> {
 		return e;
 	}
 
-	@Override
 	public boolean remove(Object e) {
-		boolean resultCode = super.remove(e);
+		boolean resultCode = actualList.remove(e);
 
 		refresh();
 
@@ -234,24 +227,13 @@ public class PagingList<E> extends ArrayList<E> {
 		return resultCode;
 	}
 
-	@Override
-	protected void removeRange(int start, int end) {
-		super.removeRange(start, end);
-
-		refresh();
-
-		// 发送数据更新事件
-		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
-	}
-
-	@Override
 	public E set(int index, E e) {
 
 		if (index < 0 || index >= getPageCapacity() || getRealIndex(index) >= getRealSize()) {
 			throw new IndexOutOfBoundsException("index : " + index);
 		}
 
-		E resultObj = super.set(getRealIndex(index), e);
+		E resultObj = actualList.set(getRealIndex(index), e);
 
 		// 发送数据更新事件
 		evtDispatcher.dispatchEvent(PagingEvent.Action, "dataChanged", new PagingEvent(this));
@@ -262,7 +244,6 @@ public class PagingList<E> extends ArrayList<E> {
 	/**
 	 * 返回当前页尺寸，迭代分页结果时可用此方法。
 	 */
-	@Override
 	public int size() {
 
 		if (this.pageNum * this.pageCapacity > getRealSize()) {
@@ -272,7 +253,6 @@ public class PagingList<E> extends ArrayList<E> {
 		return this.pageCapacity;
 	}
 
-	@Override
 	public Iterator<E> iterator() {
 		return getClip().iterator();
 	}
@@ -299,7 +279,7 @@ public class PagingList<E> extends ArrayList<E> {
 	 * @return
 	 */
 	public int getRealSize() {
-		return super.size();
+		return actualList.size();
 	}
 
 	/**
