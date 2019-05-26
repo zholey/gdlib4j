@@ -91,6 +91,21 @@ public class EventDispatcher implements Serializable {
 			listenerRegMapLock.unlock();
 		}
 	}
+	
+	/**
+	 * 移除所有事件监听器
+	 */
+	public void removeAllEventListeners() {
+		
+		listenerRegMapLock.lock();
+		try {
+			if (!listenerRegMap.isEmpty()) {
+				listenerRegMap.clear();
+			}
+		} finally {
+			listenerRegMapLock.unlock();
+		}
+	}
 
 	/**
 	 * 同步派发通知。
