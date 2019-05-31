@@ -113,15 +113,16 @@ public class EventDispatcher implements Serializable {
 	 * @param eventType
 	 *            事件类型
 	 */
+	@SuppressWarnings("unchecked")
 	public void dispatchNotice(EventType eventType) {
 		
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
-					dispatchAction((ActionListener<?>) listener, null, false);
+					dispatchAction((ActionListener<? extends Event>) listener, null, false);
 				});
 			}
 		} finally {
@@ -141,7 +142,7 @@ public class EventDispatcher implements Serializable {
 
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).forEach(listener -> {
 					dispatchEvent(listener, eventName, null, false);
 				});
@@ -157,15 +158,16 @@ public class EventDispatcher implements Serializable {
 	 * @param eventType
 	 *            事件类型
 	 */
+	@SuppressWarnings("unchecked")
 	public void asyncDispatchNotice(EventType eventType) {
 		
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
-					dispatchAction((ActionListener<?>) listener, null, true);
+					dispatchAction((ActionListener<? extends Event>) listener, null, true);
 				});
 			}
 		} finally {
@@ -185,7 +187,7 @@ public class EventDispatcher implements Serializable {
 
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).forEach(listener -> {
 					dispatchEvent(listener, eventName, null, true);
 				});
@@ -208,7 +210,7 @@ public class EventDispatcher implements Serializable {
 		
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
@@ -234,7 +236,7 @@ public class EventDispatcher implements Serializable {
 
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).forEach(listener -> {
 					dispatchEvent(listener, eventName, event, false);
 				});
@@ -257,7 +259,7 @@ public class EventDispatcher implements Serializable {
 		
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
@@ -283,7 +285,7 @@ public class EventDispatcher implements Serializable {
 
 		listenerRegMapLock.lock();
 		try {
-			if (!listenerRegMap.isEmpty()) {
+			if (listenerRegMap.containsKey(eventType)) {
 				listenerRegMap.get(eventType).forEach(listener -> {
 					dispatchEvent(listener, eventName, event, true);
 				});
@@ -299,7 +301,7 @@ public class EventDispatcher implements Serializable {
 	 * @param listener
 	 *            指定的收听者
 	 */
-	public void dispatchNotice(ActionListener<?> listener) {
+	public void dispatchNotice(ActionListener<? extends Event> listener) {
 		dispatchAction(listener, null, false);
 	}
 
@@ -323,7 +325,7 @@ public class EventDispatcher implements Serializable {
 	 * @param isAsync
 	 *            是否异步发送
 	 */
-	public void asyncDispatchAction(ActionListener<?> listener) {
+	public void asyncDispatchAction(ActionListener<? extends Event> listener) {
 		dispatchAction(listener, null, true);
 	}
 
@@ -407,7 +409,7 @@ public class EventDispatcher implements Serializable {
 	 *            是否异步发送
 	 * 
 	 */
-	public <E> void dispatchAction(ActionListener<E> listener, E event, boolean isAsync) {
+	public <E extends Event> void dispatchAction(ActionListener<E> listener, E event, boolean isAsync) {
 		
 		if (isAsync) {
 			

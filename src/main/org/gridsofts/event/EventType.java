@@ -12,23 +12,23 @@ import java.io.Serializable;
  * 
  * @author lei
  */
-public class EventType<T> implements Serializable {
+public class EventType<E extends Event> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Class<T> eventClass;
+	private Class<E> eventClass;
 	// 事件类型名称
 	private String name;
 
-	public EventType(Class<T> eventClass, String name) {
+	public EventType(Class<E> eventClass, String name) {
 		this.eventClass = eventClass;
 		this.name = name;
 	}
 
-	public Class<T> getEventClass() {
+	public Class<E> getEventClass() {
 		return eventClass;
 	}
 
-	public void setEventClass(Class<T> eventClass) {
+	public void setEventClass(Class<E> eventClass) {
 		this.eventClass = eventClass;
 	}
 

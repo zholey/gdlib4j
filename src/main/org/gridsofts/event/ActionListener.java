@@ -10,7 +10,7 @@ package org.gridsofts.event;
  * 
  * @author lei
  */
-public interface ActionListener<E> extends java.util.EventListener {
+public interface ActionListener<E extends Event> extends java.util.EventListener {
 
 	/**
 	 * 执行事件动作
