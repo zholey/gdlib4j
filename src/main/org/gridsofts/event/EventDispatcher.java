@@ -121,7 +121,7 @@ public class EventDispatcher implements Serializable {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
-					dispatchAction((ActionListener) listener, null, false);
+					dispatchAction((ActionListener<?>) listener, null, false);
 				});
 			}
 		} finally {
@@ -165,7 +165,7 @@ public class EventDispatcher implements Serializable {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
-					dispatchAction((ActionListener) listener, null, true);
+					dispatchAction((ActionListener<?>) listener, null, true);
 				});
 			}
 		} finally {
@@ -203,7 +203,8 @@ public class EventDispatcher implements Serializable {
 	 * @param event
 	 *            要派发的事件。
 	 */
-	public void dispatchEvent(EventType eventType, Event event) {
+	@SuppressWarnings("unchecked")
+	public void dispatchAction(EventType eventType, Event event) {
 		
 		listenerRegMapLock.lock();
 		try {
@@ -211,7 +212,7 @@ public class EventDispatcher implements Serializable {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
-					dispatchAction((ActionListener) listener, event, false);
+					dispatchAction((ActionListener<Event>) listener, event, false);
 				});
 			}
 		} finally {
@@ -251,7 +252,8 @@ public class EventDispatcher implements Serializable {
 	 * @param event
 	 *            要派发的事件。
 	 */
-	public void asyncDispatchEvent(EventType eventType, Event event) {
+	@SuppressWarnings("unchecked")
+	public void asyncDispatchAction(EventType eventType, Event event) {
 		
 		listenerRegMapLock.lock();
 		try {
@@ -259,7 +261,7 @@ public class EventDispatcher implements Serializable {
 				listenerRegMap.get(eventType).stream().filter(listener -> {
 					return listener instanceof ActionListener;
 				}).forEach(listener -> {
-					dispatchAction((ActionListener) listener, event, true);
+					dispatchAction((ActionListener<Event>) listener, event, true);
 				});
 			}
 		} finally {
@@ -297,7 +299,7 @@ public class EventDispatcher implements Serializable {
 	 * @param listener
 	 *            指定的收听者
 	 */
-	public void dispatchNotice(ActionListener listener) {
+	public void dispatchNotice(ActionListener<?> listener) {
 		dispatchAction(listener, null, false);
 	}
 
@@ -321,7 +323,7 @@ public class EventDispatcher implements Serializable {
 	 * @param isAsync
 	 *            是否异步发送
 	 */
-	public void asyncDispatchAction(ActionListener listener) {
+	public void asyncDispatchAction(ActionListener<?> listener) {
 		dispatchAction(listener, null, true);
 	}
 
@@ -405,7 +407,7 @@ public class EventDispatcher implements Serializable {
 	 *            是否异步发送
 	 * 
 	 */
-	public void dispatchAction(ActionListener listener, Event event, boolean isAsync) {
+	public <E> void dispatchAction(ActionListener<E> listener, E event, boolean isAsync) {
 		
 		if (isAsync) {
 			

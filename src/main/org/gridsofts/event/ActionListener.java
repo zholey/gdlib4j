@@ -10,12 +10,12 @@ package org.gridsofts.event;
  * 
  * @author lei
  */
-public interface ActionListener extends java.util.EventListener {
+public interface ActionListener<E> extends java.util.EventListener {
 
 	/**
 	 * 执行事件动作
 	 * 
 	 * @param event
 	 */
-	public void actionPerformed(Event event);
+	public void actionPerformed(E event);
 }
