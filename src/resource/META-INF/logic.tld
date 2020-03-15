@@ -53,11 +53,6 @@
   		<type>java.lang.String</type>
   	</attribute>
   </tag>
-  <tag>
-  	<name>noPermission</name>
-  	<tag-class>org.gridsofts.web.taglib.logic.permissionClasses.NoPermission</tag-class>
-  	<body-content>JSP</body-content>
-  </tag>
   
   <tag>
   	<name>if</name>

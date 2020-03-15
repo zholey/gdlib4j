@@ -40,7 +40,6 @@ public class Permission extends BodyTagSupport {
 	 * 输入参数：权限校验实现类
 	 */
 	private String implement;
-	
 	private String redirectURI;
 
 	private String[] operations;
@@ -49,11 +48,6 @@ public class Permission extends BodyTagSupport {
 	private IPermission permissionObject;
 
 	private boolean hasPermission = false;
-
-	/**
-	 * 子标签NonPermission包含的内容（如果有）
-	 */
-	private String nonPermissionContent;
 
 	/**
 	 * 输入参数：权限标识列表（以“,”分隔）
@@ -69,10 +63,6 @@ public class Permission extends BodyTagSupport {
 		this.implement = implement;
 	}
 
-	public void setNonPermissionContent(String nonPermissionContent) {
-		this.nonPermissionContent = nonPermissionContent;
-	}
-	
 	public void setRedirectURI(String redirectURI) {
 		this.redirectURI = redirectURI;
 	}
@@ -80,11 +70,8 @@ public class Permission extends BodyTagSupport {
 	@Override
 	public int doStartTag() throws JspException {
 
-		setNonPermissionContent(null);
-
-		if (StringUtil.isNull(redirectURI)) {
-			redirectURI = REDIRECT_CODE.replace("${redirectURI}", pageContext.getServletContext().getContextPath() + "/");
-		} else {
+		// 只有当用户显式指定重定向地址时才输出重定向
+		if (!StringUtil.isNull(redirectURI)) {
 			redirectURI = REDIRECT_CODE.replace("${redirectURI}", redirectURI);
 		}
 
@@ -119,15 +106,12 @@ public class Permission extends BodyTagSupport {
 		try {
 
 			if (permissionObject == null) {
-
 				writeToBody("无法实例化指定的权限类 [" + implement + "]");
-
 				return BodyTag.SKIP_BODY;
-
-			} else {
-
-				hasPermission = permissionObject.check(pageContext.getRequest(), operations);
-
+			}
+			
+			// 
+			if (hasPermission = permissionObject.check(pageContext.getRequest(), operations)) {
 				return BodyTag.EVAL_BODY_BUFFERED;
 			}
 		} catch (Throwable ex) {
@@ -140,22 +124,8 @@ public class Permission extends BodyTagSupport {
 	public int doAfterBody() throws JspException {
 
 		try {
-
-			/**
-			 * 以下条件成立则显示内容，其它情况不显示内容（如果存在子标签NonPermission，则显示子标签的内容）：<br>
-			 * 
-			 * A：权限校验为True；
-			 */
 			if (bodyContent != null) {
-				
-				if (hasPermission) {
-
-					writeToBody(bodyContent.getString());
-
-				} else if (nonPermissionContent != null) {
-
-					writeToBody(nonPermissionContent);
-				}
+				writeToBody(bodyContent.getString());
 			}
 		} catch (Throwable ex) {
 		}
@@ -179,38 +149,23 @@ public class Permission extends BodyTagSupport {
 	@Override
 	public int doEndTag() throws JspException {
 
-		/**
-		 * 当标签内容为空时，以下条件有一条成立则停止加载网页，其它情况继续加载网页：<br>
-		 * 
-		 * A：权限判断对象为空；<br>
-		 * B：权限校验为False；
-		 */
 		try {
-			if (bodyContent == null && !hasPermission) {
+			// 如果没有权限，并且用户显式设定的重定向地址，则输出重定向标签后停止加载网页
+			if (!hasPermission && !StringUtil.isNull(redirectURI)) {
 
 				try {
 					pageContext.getOut().println(redirectURI);
 				} catch (IOException e) {
 				}
-
-				return BodyTag.SKIP_PAGE;
+				
+				return Tag.SKIP_PAGE;
 			}
-
-			return Tag.EVAL_PAGE;
 		} finally {
 			hasPermission = false;
 			permissionClass = null;
 			permissionObject = null;
 		}
-	}
-
-	/**
-	 * 此方法是为其它标签验证权限提供的应用扩展。<br/>
-	 * 其它想要验证权限的标签，可以作为本标签的子标签，继而调用本方法来验证权限。<br/>
-	 * 
-	 * @return
-	 */
-	public boolean hasPermission() {
-		return hasPermission;
+		
+		return Tag.EVAL_PAGE;
 	}
 }
