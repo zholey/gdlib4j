@@ -319,6 +319,24 @@ public class PagingList<E> implements List<E>, Serializable {
 	public int getPageCount() {
 		return pageCount;
 	}
+	
+	/**
+	 * 获取前一页码
+	 * 
+	 * @return
+	 */
+	public int getPrevPageNum() {
+		return getPageNum() - 1 <= 1 ? 1 : getPageNum() - 1;
+	}
+	
+	/**
+	 * 获取下一页码
+	 * 
+	 * @return
+	 */
+	public int getNextPageNum() {
+		return getPageNum() + 1 >= getPageCount() ? getPageCount() : getPageNum() + 1;
+	}
 
 	/**
 	 * 页码
