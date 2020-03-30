@@ -163,10 +163,8 @@ public class BeanUtil {
 	/**
 	 * 从给定的Bean获取属性值；
 	 * 
-	 * @param bean
-	 *            给定的Bean，可以是Map
-	 * @param fldName
-	 *            属性名称，支持级联表达式“.”
+	 * @param bean    给定的Bean，可以是Map
+	 * @param fldName 属性名称，支持级联表达式“.”
 	 * @return
 	 */
 	public static <T> Object getFieldValue(T bean, String fldName) {
@@ -239,10 +237,8 @@ public class BeanUtil {
 	/**
 	 * 根据结果集信息，构造结果Map。对于此结果集的遍历操作，应该在此方法的宿主内进行。
 	 * 
-	 * @param rs
-	 *            结果集
-	 * @param rsmd
-	 *            结果集元数据
+	 * @param rs   结果集
+	 * @param rsmd 结果集元数据
 	 * @return
 	 */
 	public static Map<String, Object> getEntityMap(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
@@ -288,31 +284,33 @@ public class BeanUtil {
 	 * 拷贝属性
 	 * 
 	 * @param <T>
-	 * @param fromBean
-	 * @param toBean
+	 * @param fromObj
+	 * @param toObj
 	 * @param ignoreFields
 	 * @param limitFields
 	 */
-	public static <T> T copyProperties(T fromBean, T toBean, String[] ignoreFields, String[] limitFields) {
+	public static <T> T copyProperties(T fromObj, T toObj, String[] ignoreFields, String[] limitFields) {
 
-		if (fromBean == null || toBean == null) {
+		if (fromObj == null || toObj == null) {
 			throw new NullPointerException();
 		}
 
-		Field[] fields = fromBean.getClass().getDeclaredFields();
+		Field[] fields = toObj.getClass().getDeclaredFields();
 
 		if (fields == null || fields.length == 0) {
-			return toBean;
+			return toObj;
 		}
 
 		// 为bean的各字段赋值
 		fieldLoop: for (int i = 0, fieldCount = fields.length; i < fieldCount; i++) {
-			String fieldName = fields[i].getName();
+			Field toFld = fields[i];
 
 			// 跳过静态、常量字段
-			if (isConstField(fields[i])) {
+			if (isConstField(toFld)) {
 				continue fieldLoop;
 			}
+
+			String fieldName = toFld.getName();
 
 			// 忽略的字段
 			if (ignoreFields != null) {
@@ -342,31 +340,42 @@ public class BeanUtil {
 				}
 			}
 
+			Object fieldValue = null;
+
 			// getter
 			Method getterMethod = null;
 			try {
-				getterMethod = fromBean.getClass().getMethod(getGetterMethodName(fieldName));
+				getterMethod = fromObj.getClass().getMethod(getGetterMethodName(fieldName));
+
+				// 优先使用 getter 方法来获取属性值
+				if (getterMethod != null) {
+					fieldValue = getterMethod.invoke(fromObj);
+				} else {
+					Field fromFld = fromObj.getClass().getField(fieldName);
+					if (fromFld != null) {
+						fromFld.setAccessible(true);
+						fieldValue = fromFld.get(fromObj);
+					}
+				}
 			} catch (Throwable e) {
 			}
 
 			// setter
 			Method setterMethod = null;
 			try {
-				setterMethod = toBean.getClass().getMethod(getSetterMethodName(fieldName), fields[i].getType());
-			} catch (Throwable e) {
-			}
+				setterMethod = toObj.getClass().getMethod(getSetterMethodName(fieldName), toFld.getType());
 
-			// 如果找不到指定字段的setter方法或getter方法，则忽略
-			if (getterMethod == null || setterMethod == null) {
-				continue;
-			}
-
-			try {
-				setterMethod.invoke(toBean, getterMethod.invoke(fromBean));
+				// 优先使用 setter 方法来为属性赋值
+				if (setterMethod != null) {
+					setterMethod.invoke(toObj, fieldValue);
+				} else {
+					toFld.setAccessible(true);
+					toFld.set(toObj, fieldValue);
+				}
 			} catch (Throwable e) {
 			}
 		}
 
-		return toBean;
+		return toObj;
 	}
 }
