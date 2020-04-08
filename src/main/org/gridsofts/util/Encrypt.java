@@ -11,6 +11,7 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -25,7 +26,6 @@ import javax.crypto.spec.SecretKeySpec;
  * @author zholey
  * @version 2.0
  */
-
 public class Encrypt implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class Encrypt implements Serializable {
 			Cipher cipher = Cipher.getInstance("AES");
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(secretKey.getEncoded(), "AES"));
 
-			return Base64.encodeBytes(cipher.doFinal(data.getBytes(charsetName)));
+			return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes(charsetName)));
 		} catch (Throwable ex) {
 		}
 
@@ -72,7 +72,7 @@ public class Encrypt implements Serializable {
 			Cipher cipher = Cipher.getInstance("AES");
 			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(secretKey.getEncoded(), "AES"));
 
-			return new String(cipher.doFinal(Base64.decode(encryptedData)), charsetName);
+			return new String(cipher.doFinal(Base64.getDecoder().decode(encryptedData)), charsetName);
 		} catch (Throwable ex) {
 		}
 
@@ -97,7 +97,7 @@ public class Encrypt implements Serializable {
 			Cipher cipher = Cipher.getInstance("DES");
 			cipher.init(Cipher.ENCRYPT_MODE, secKey, new SecureRandom());
 
-			return Base64.encodeBytes(cipher.doFinal(data.getBytes(charsetName)));
+			return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes(charsetName)));
 		} catch (Throwable ex) {
 		}
 
@@ -122,7 +122,7 @@ public class Encrypt implements Serializable {
 			Cipher cipher = Cipher.getInstance("DES");
 			cipher.init(Cipher.DECRYPT_MODE, secKey, new SecureRandom());
 
-			return new String(cipher.doFinal(Base64.decode(encryptedData)), charsetName);
+			return new String(cipher.doFinal(Base64.getDecoder().decode(encryptedData)), charsetName);
 		} catch (Throwable ex) {
 		}
 
@@ -138,6 +138,17 @@ public class Encrypt implements Serializable {
 	 */
 	public static String sha1(String source) {
 		return digest("SHA1", source, "UTF-8", "");
+	}
+
+	/**
+	 * 将指定文件进行SHA1加密后返回。
+	 * 
+	 * @param source
+	 *            指定的需要加密的文件内容
+	 * @return 加密后的字符串
+	 */
+	public static String sha1(byte[] bytes) {
+		return digest("SHA1", bytes);
 	}
 
 	/**
@@ -174,6 +185,17 @@ public class Encrypt implements Serializable {
 	 */
 	public static String md5(String source) {
 		return digest("MD5", source, "UTF-8", "");
+	}
+	
+	/**
+	 * 将指定文件进行MD5加密后返回。
+	 * 
+	 * @param bytes
+	 *            指定的需要加密的文件内容
+	 * @return 加密后的字符串
+	 */
+	public static String md5(byte[] bytes) {
+		return digest("MD5", bytes);
 	}
 
 	/**
@@ -214,11 +236,29 @@ public class Encrypt implements Serializable {
 
 		if (source != null) {
 			try {
+				return digest(algorithm, (source + key).getBytes(charsetName));
+			} catch (UnsupportedEncodingException e) {
+			}
+		}
+
+		return null;
+	}
+	
+	/**
+	 * 对给定的数据进行摘要计算
+	 * 
+	 * @param algorithm
+	 * @param sourceBytes
+	 * @return
+	 */
+	private static String digest(String algorithm, byte[] bytes) {
+
+		if (bytes != null) {
+			try {
 				MessageDigest md = MessageDigest.getInstance(algorithm);
-				return toHexString(md.digest((source + key).getBytes(charsetName)));
+				return toHexString(md.digest(bytes));
 
 			} catch (NoSuchAlgorithmException e) {
-			} catch (UnsupportedEncodingException e) {
 			}
 		}
 
