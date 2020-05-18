@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.EventListener;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.gridsofts.event.Event;
 import org.gridsofts.event.EventDispatcher;
@@ -24,7 +23,7 @@ import org.gridsofts.event.EventType;
  * 
  * @param <E>
  */
-public class PagingList<E> implements List<E>, Serializable {
+public class PagingList<E> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private EventDispatcher evtDispatcher; // 事件派发器
@@ -435,60 +434,5 @@ public class PagingList<E> implements List<E>, Serializable {
 		public PagingEvent(Object source) {
 			super(source);
 		}
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return getClip().isEmpty();
-	}
-
-	@Override
-	public boolean contains(Object o) {
-		return getClip().contains(o);
-	}
-
-	@Override
-	public Object[] toArray() {
-		return getClip().toArray();
-	}
-
-	@Override
-	public <T> T[] toArray(T[] a) {
-		return getClip().toArray(a);
-	}
-
-	@Override
-	public boolean containsAll(Collection<?> c) {
-		return getClip().containsAll(c);
-	}
-
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		return actualList.removeAll(c);
-	}
-
-	@Override
-	public boolean retainAll(Collection<?> c) {
-		return actualList.retainAll(c);
-	}
-
-	@Override
-	public void add(int index, E element) {
-		actualList.add(index, element);
-	}
-
-	@Override
-	public ListIterator<E> listIterator() {
-		return getClip().listIterator();
-	}
-
-	@Override
-	public ListIterator<E> listIterator(int index) {
-		return getClip().listIterator(index);
-	}
-
-	@Override
-	public List<E> subList(int fromIndex, int toIndex) {
-		return getClip().subList(fromIndex, toIndex);
 	}
 }
