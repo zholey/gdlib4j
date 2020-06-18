@@ -94,6 +94,10 @@ public class KfkProducer implements IMQProducer, Serializable {
 
 	@Override
 	public boolean sendMessage(Serializable message) {
+		return sendMessage(topicName, message);
+	}
+	
+	public boolean sendMessage(String topicName, Serializable message) {
 
 		try {
 			if (message == null) {
@@ -101,9 +105,9 @@ public class KfkProducer implements IMQProducer, Serializable {
 			}
 			
 			if (message instanceof byte[]) {
-				return sendBytesMessage((byte[]) message);
+				return sendBytesMessage(topicName, (byte[]) message);
 			} else {
-				return sendBytesMessage(BeanUtil.convertToBytes(message));
+				return sendBytesMessage(topicName, BeanUtil.convertToBytes(message));
 			}
 		} catch (Throwable e) {
 			return false;
@@ -112,6 +116,10 @@ public class KfkProducer implements IMQProducer, Serializable {
 
 	@Override
 	public boolean sendBytesMessage(byte[] message) {
+		return sendBytesMessage(topicName, message);
+	}
+
+	public boolean sendBytesMessage(String topicName, byte[] message) {
 
 		try {
 			if (message == null) {

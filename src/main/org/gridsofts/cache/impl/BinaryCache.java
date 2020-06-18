@@ -79,7 +79,11 @@ public class BinaryCache implements ICache {
 	}
 
 	public void disconnect() {
-		jedisPool.destroy();
+		
+		if (jedisPool != null) {
+			jedisPool.destroy();
+			jedisPool = null;
+		}
 	}
 
 	/*
