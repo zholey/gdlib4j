@@ -273,7 +273,8 @@ public class RedisCache implements ICache {
 			jedis = jedisPool.getResource();
 
 			if (key != null) {
-				String jsonVal = jackson.toJson(value == null ? "" : value);
+				String jsonVal = ((value == null) ? ""
+						: (value instanceof String) ? value.toString() : jackson.toJson(value));
 
 				if (expired > 0) {
 					jedis.setex(obtainKey(scope, key), expired, jsonVal);
