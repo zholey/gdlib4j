@@ -5,16 +5,18 @@
  */
 package org.gridsofts.web.taglib.html;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.tagext.Tag;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.gridsofts.web.util.URLUtil;
 
 public class EmbedFile extends TagSupport {
@@ -35,9 +37,7 @@ public class EmbedFile extends TagSupport {
 
 	public int doStartTag() {
 
-		HttpURLConnection httpConnection = null;
-
-		try {
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 			String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
 
 			file = URLUtil.justify(contextPath + "/" + file);
@@ -75,23 +75,21 @@ public class EmbedFile extends TagSupport {
 
 				String url = URLUtil.getRequestHostURL((HttpServletRequest) pageContext.getRequest()) + file;
 
-				httpConnection = (HttpURLConnection) new URL(url).openConnection();
+				HttpGet httpGet = new HttpGet(url);
+				httpGet.setHeader("User-Agent", "Gridsofts.taglib.EmbedFile");
+				httpGet.setHeader("Cookie", "JSESSIONID=" + pageContext.getSession().getId());
 
-				httpConnection.setRequestProperty("Cookie", "JSESSIONID=" + pageContext.getSession().getId());
+				try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+					if (response.getStatusLine().getStatusCode() == 200) {
+						String content = EntityUtils.toString(response.getEntity());
 
-				BufferedReader br = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), encoding));
-
-				while ((html = br.readLine()) != null) {
-					pageContext.getOut().println(html);
+						Charset charset = Charset.forName(encoding);
+						pageContext.getOut().println(new String(content.getBytes(charset), charset));
+					}
+				} catch (Throwable e) {
 				}
 			}
 		} catch (Exception ex) {
-		} finally {
-
-			if (httpConnection != null) {
-				httpConnection.disconnect();
-				httpConnection = null;
-			}
 		}
 
 		return Tag.SKIP_BODY;
