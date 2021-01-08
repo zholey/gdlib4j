@@ -8,9 +8,11 @@ package org.gridsofts.cache.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gridsofts.cache.ICache;
 import org.gridsofts.json.JacksonHelper;
+import org.gridsofts.util.StringUtil;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -68,7 +70,7 @@ public class RedisCache implements ICache {
 
 	public void connect() {
 
-		if (jedisPool == null) {
+		if (jedisPool == null && !StringUtil.isNull(redisHost) && redisPort > 0) {
 			JedisPoolConfig config = new JedisPoolConfig();
 
 			config.setMaxTotal(maxTotal);
@@ -81,7 +83,7 @@ public class RedisCache implements ICache {
 	}
 
 	public void disconnect() {
-		
+
 		if (jedisPool != null) {
 			jedisPool.destroy();
 			jedisPool = null;
@@ -98,45 +100,67 @@ public class RedisCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			return jedis.keys(obtainKey(scope, key));
+				if (jedis != null) {
+					Set<String> keys = jedis.keys(obtainKey(scope, key));
+					if (keys != null && !keys.isEmpty()) {
+
+						return keys.parallelStream().map(k -> {
+							return obtainPrimitiveKey(scope, k);
+						}).collect(Collectors.toSet());
+					}
+				}
+			}
+
+			return null;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.gridsofts.cache.ICache#values(java.lang.String,
-	 * java.lang.String, java.lang.Class)
+	 * @see org.gridsofts.cache.ICache#values(java.lang.String, java.lang.String,
+	 * java.lang.Class)
 	 */
 	@Override
 	public <T> Collection<T> values(String scope, String key, Class<T> objClass) {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
-			Set<String> keys = jedis.keys(obtainKey(scope, key));
-
 			Collection<T> values = null;
-			if (keys != null) {
-				values = new ArrayList<>();
 
-				for (String k : keys) {
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-					try {
-						String objJsonStr = jedis.get(obtainKey(scope, k));
-						values.add(jackson.getObject(objJsonStr, objClass));
-					} catch (Throwable e) {
+				if (jedis != null) {
+					Set<String> keys = jedis.keys(obtainKey(scope, key));
+
+					if (keys != null) {
+						values = new ArrayList<>();
+
+						for (String k : keys) {
+
+							try {
+								String objJsonStr = jedis.get(obtainKey(scope, k));
+								values.add(jackson.getObject(objJsonStr, objClass));
+							} catch (Throwable e) {
+							}
+						}
 					}
 				}
 			}
 
 			return values;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -150,11 +174,19 @@ public class RedisCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			return jedis.exists(obtainKey(scope, key));
+				if (jedis != null) {
+					return jedis.exists(obtainKey(scope, key));
+				}
+			}
+
+			return false;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -168,11 +200,19 @@ public class RedisCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			return jedis.get(obtainKey(scope, key));
+				if (jedis != null) {
+					return jedis.get(obtainKey(scope, key));
+				}
+			}
+
+			return null;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -187,17 +227,21 @@ public class RedisCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			if (key != null && objClass != null && jedis.exists(obtainKey(scope, key))) {
-				String jsonVal = jedis.get(obtainKey(scope, key));
+				if (key != null && objClass != null && jedis != null && jedis.exists(obtainKey(scope, key))) {
+					String jsonVal = jedis.get(obtainKey(scope, key));
 
-				return jackson.getObject(jsonVal, objClass);
+					return jackson.getObject(jsonVal, objClass);
+				}
 			}
 
 			return null;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -212,25 +256,28 @@ public class RedisCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			if (key != null && objClass != null && jedis.exists(obtainKey(scope, key))) {
-				String jsonVal = jedis.get(obtainKey(scope, key));
+				if (key != null && objClass != null && jedis != null && jedis.exists(obtainKey(scope, key))) {
+					String jsonVal = jedis.get(obtainKey(scope, key));
 
-				return jackson.getObject(jsonVal, objClass, actualTypeClass);
+					return jackson.getObject(jsonVal, objClass, actualTypeClass);
+				}
 			}
 
 			return null;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key) {
@@ -240,8 +287,7 @@ public class RedisCache implements ICache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key, int expired) {
@@ -251,8 +297,7 @@ public class RedisCache implements ICache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key, Object value) {
@@ -262,28 +307,31 @@ public class RedisCache implements ICache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key, Object value, int expired) {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			if (key != null) {
-				String jsonVal = ((value == null) ? ""
-						: (value instanceof String) ? value.toString() : jackson.toJson(value));
+				if (key != null && jedis != null) {
+					String jsonVal = ((value == null) ? ""
+							: (value instanceof String) ? value.toString() : jackson.toJson(value));
 
-				if (expired > 0) {
-					jedis.setex(obtainKey(scope, key), expired, jsonVal);
-				} else {
-					jedis.set(obtainKey(scope, key), jsonVal);
+					if (expired > 0) {
+						jedis.setex(obtainKey(scope, key), expired, jsonVal);
+					} else {
+						jedis.set(obtainKey(scope, key), jsonVal);
+					}
 				}
 			}
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -297,11 +345,17 @@ public class RedisCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			jedis.del(obtainKey(scope, key));
+				if (jedis != null) {
+					jedis.del(obtainKey(scope, key));
+				}
+			}
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -316,11 +370,17 @@ public class RedisCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			jedis.expire(obtainKey(scope, key), expired);
+				if (jedis != null) {
+					jedis.expire(obtainKey(scope, key), expired);
+				}
+			}
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -333,5 +393,22 @@ public class RedisCache implements ICache {
 	 */
 	private String obtainKey(String scope, String key) {
 		return namespace + "." + scope + "." + key;
+	}
+
+	/**
+	 * 获取原始Key（去掉前缀）
+	 * 
+	 * @param scope
+	 * @param key
+	 * @return
+	 */
+	private String obtainPrimitiveKey(String scope, String key) {
+		String prefix = obtainKey(scope, "");
+
+		if (key.startsWith(prefix)) {
+			return key.replaceFirst(prefix, "");
+		}
+
+		return key;
 	}
 }

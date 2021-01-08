@@ -5,12 +5,13 @@
  */
 package org.gridsofts.cache.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gridsofts.cache.ICache;
 import org.gridsofts.util.BeanUtil;
+import org.gridsofts.util.StringUtil;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -66,7 +67,7 @@ public class BinaryCache implements ICache {
 
 	public void connect() {
 
-		if (jedisPool == null) {
+		if (jedisPool == null && !StringUtil.isNull(redisHost) && redisPort > 0) {
 			JedisPoolConfig config = new JedisPoolConfig();
 
 			config.setMaxTotal(maxTotal);
@@ -79,7 +80,7 @@ public class BinaryCache implements ICache {
 	}
 
 	public void disconnect() {
-		
+
 		if (jedisPool != null) {
 			jedisPool.destroy();
 			jedisPool = null;
@@ -96,55 +97,70 @@ public class BinaryCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
-			Set<byte[]> keys = jedis.keys(obtainKey(scope, key));
-			
 			Collection<String> kList = null;
-			if (keys != null) {
-				kList = new ArrayList<>();
-				
-				for (byte[] k : keys) {
-					kList.add(getKey(k));
+
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
+
+				if (jedis != null) {
+					Set<byte[]> keys = jedis.keys(obtainKey(scope, key));
+
+					if (keys != null && !keys.isEmpty()) {
+
+						return keys.parallelStream().map(k -> {
+							return obtainPrimitiveKey(scope, toString(k));
+						}).collect(Collectors.toSet());
+					}
 				}
 			}
 
 			return kList;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.gridsofts.cache.ICache#values(java.lang.String,
-	 * java.lang.String, java.lang.Class)
+	 * @see org.gridsofts.cache.ICache#values(java.lang.String, java.lang.String,
+	 * java.lang.Class)
 	 */
 	@Override
 	public <T> Collection<T> values(String scope, String key, Class<T> objClass) {
 
-		Jedis jedis = null;
+		Jedis jedisP = null;
 		try {
-			jedis = jedisPool.getResource();
-			Set<byte[]> keys = jedis.keys(obtainKey(scope, key));
-
 			Collection<T> values = null;
-			if (keys != null) {
-				values = new ArrayList<>();
 
-				for (byte[] k : keys) {
+			if (jedisPool != null) {
+				final Jedis jedis = jedisPool.getResource();
+				
+				jedisP = jedis;
 
-					try {
-						byte[] bytesVal = jedis.get(obtainKey(scope, getKey(k)));
-						values.add(BeanUtil.convertToObject(bytesVal, objClass));
-					} catch (Throwable e) {
+				if (jedis != null) {
+					Set<byte[]> keys = jedis.keys(obtainKey(scope, key));
+
+					if (keys != null && !keys.isEmpty()) {
+
+						return keys.parallelStream().map(k -> {
+							try {
+								return BeanUtil.convertToObject(jedis.get(k), objClass);
+							} catch (Throwable e) {
+								return null;
+							}
+						}).collect(Collectors.toSet());
 					}
 				}
 			}
 
 			return values;
 		} finally {
-			jedis.close();
+			if (jedisP != null) {
+				jedisP.close();
+			}
 		}
 	}
 
@@ -158,11 +174,17 @@ public class BinaryCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			return jedis.exists(obtainKey(scope, key));
+				return jedis != null && jedis.exists(obtainKey(scope, key));
+			}
+
+			return false;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -176,17 +198,25 @@ public class BinaryCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			byte[] bytesVal = jedis.get(obtainKey(scope, key));
+				if (jedis != null) {
+					byte[] bytesVal = jedis.get(obtainKey(scope, key));
 
-			try {
-				return new String(bytesVal, "UTF-8");
-			} catch (Throwable e) {
-				return new String(bytesVal);
+					try {
+						return new String(bytesVal, "UTF-8");
+					} catch (Throwable e) {
+						return new String(bytesVal);
+					}
+				}
 			}
+
+			return null;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -212,25 +242,28 @@ public class BinaryCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			if (key != null && objClass != null && jedis.exists(obtainKey(scope, key))) {
-				byte[] bytesVal = jedis.get(obtainKey(scope, key));
+				if (key != null && objClass != null && jedis != null && jedis.exists(obtainKey(scope, key))) {
+					byte[] bytesVal = jedis.get(obtainKey(scope, key));
 
-				return BeanUtil.convertToObject(bytesVal, objClass);
+					return BeanUtil.convertToObject(bytesVal, objClass);
+				}
 			}
 
 			return null;
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key) {
@@ -240,8 +273,7 @@ public class BinaryCache implements ICache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key, int expired) {
@@ -251,8 +283,7 @@ public class BinaryCache implements ICache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key, Object value) {
@@ -262,27 +293,30 @@ public class BinaryCache implements ICache {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.uptech.homer.cache.ICache#put(java.lang.String,
-	 * java.lang.String)
+	 * @see com.uptech.homer.cache.ICache#put(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void put(String scope, String key, Object value, int expired) {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			if (key != null) {
-				byte[] bytesVal = BeanUtil.convertToBytes(value == null ? "" : value);
+				if (key != null && jedis != null) {
+					byte[] bytesVal = BeanUtil.convertToBytes(value == null ? "" : value);
 
-				if (expired > 0) {
-					jedis.setex(obtainKey(scope, key), expired, bytesVal);
-				} else {
-					jedis.set(obtainKey(scope, key), bytesVal);
+					if (expired > 0) {
+						jedis.setex(obtainKey(scope, key), expired, bytesVal);
+					} else {
+						jedis.set(obtainKey(scope, key), bytesVal);
+					}
 				}
 			}
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -296,11 +330,17 @@ public class BinaryCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			jedis.del(obtainKey(scope, key));
+				if (jedis != null) {
+					jedis.del(obtainKey(scope, key));
+				}
+			}
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -315,11 +355,17 @@ public class BinaryCache implements ICache {
 
 		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
 
-			jedis.expire(obtainKey(scope, key), expired);
+				if (jedis != null) {
+					jedis.expire(obtainKey(scope, key), expired);
+				}
+			}
 		} finally {
-			jedis.close();
+			if (jedis != null) {
+				jedis.close();
+			}
 		}
 	}
 
@@ -346,12 +392,29 @@ public class BinaryCache implements ICache {
 	 * @param keyBytes
 	 * @return
 	 */
-	private String getKey(byte[] keyBytes) {
+	private String toString(byte[] keyBytes) {
 
 		try {
 			return new String(keyBytes, "UTF-8");
 		} catch (Throwable e) {
 			return new String(keyBytes);
 		}
+	}
+
+	/**
+	 * 获取原始Key（去掉前缀）
+	 * 
+	 * @param scope
+	 * @param key
+	 * @return
+	 */
+	private String obtainPrimitiveKey(String scope, String key) {
+		String prefix = namespace + "." + scope + ".";
+
+		if (key.startsWith(prefix)) {
+			return key.replaceFirst(prefix, "");
+		}
+
+		return key;
 	}
 }
