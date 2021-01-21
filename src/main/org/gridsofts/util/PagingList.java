@@ -272,6 +272,10 @@ public class PagingList<E> implements Serializable {
 
 		return clipList;
 	}
+	
+	public void setClip(List<E> clip) {
+		addAll(clip);
+	}
 
 	/**
 	 * 返回总长度，不考虑分页。
