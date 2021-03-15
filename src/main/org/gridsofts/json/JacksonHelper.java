@@ -37,17 +37,29 @@ public class JacksonHelper {
 	/**
 	 * 将JavaBean转换成JSON字符串
 	 * 
-	 * @param obj 将要进行序列化的对象
+	 * @param obj      将要进行序列化的对象
+	 * @param isPretty 是否进行美化
 	 * @return
 	 */
-	public String toJson(Object obj) {
+	public String toJson(Object obj, boolean isPretty) {
 
 		try {
-			return objectMapper.writeValueAsString(obj);
+			return isPretty ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj)
+					: objectMapper.writeValueAsString(obj);
 		} catch (Throwable e) {
 		}
 
 		return null;
+	}
+
+	/**
+	 * 将JavaBean转换成JSON字符串
+	 * 
+	 * @param obj 将要进行序列化的对象
+	 * @return
+	 */
+	public String toJson(Object obj) {
+		return toJson(obj, false);
 	}
 
 	/**
@@ -112,8 +124,8 @@ public class JacksonHelper {
 
 	/**
 	 * （常用）从给定的JSON字符串中读取出指定元素类型的List对象；<br/>
-	 * 这个方法是 List&lt;String> obj = getObject(content, List.class,
-	 * String.class) 的简写形式
+	 * 这个方法是 List&lt;String> obj = getObject(content, List.class, String.class)
+	 * 的简写形式
 	 * 
 	 * @param content     将要进行反序列化的JSON字符串，JSON内容应为数组
 	 * @param elementType 与JSON数组内单个对象等价的JavaBean类型，即List内的元素对象类型
