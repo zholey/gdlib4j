@@ -8,7 +8,10 @@ package org.gridsofts.guif;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
@@ -66,7 +69,7 @@ public class Application extends JFrame implements IMenuListener {
 
 	private IDataProvider<ITreeNode> discoveryProvider = null;
 	private ITreeListener discoveryListener = null;
-	
+
 	/******/
 	private final Session session = new Session();
 
@@ -115,7 +118,7 @@ public class Application extends JFrame implements IMenuListener {
 	/**
 	 * 启动应用程序
 	 */
-	public void rockroll() {
+	public void showUI() {
 
 		if (windowListener == null) {
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -215,7 +218,7 @@ public class Application extends JFrame implements IMenuListener {
 	 * 
 	 * @param tabbedComp
 	 */
-	protected void appendToWorkbench(Component tabbedComp) {
+	public void appendToWorkbench(Component tabbedComp) {
 
 		int tabIndex = workbenchPane.indexOfComponent(tabbedComp);
 		if (tabIndex < 0) {
@@ -232,24 +235,34 @@ public class Application extends JFrame implements IMenuListener {
 	 * 
 	 * @param dialogContentComp
 	 */
-	protected void popupModalDialog(Component dialogContentComp) {
+	public void popupModalDialog(Component dialogContentComp) {
 
+		Rectangle parentBounds = _instance.getBounds();
+		Dimension preferredSize = dialogContentComp.getPreferredSize();
+
+		JDialog dialog = null;
 		if (JDialog.class.isAssignableFrom(dialogContentComp.getClass())) {
-			((JDialog) dialogContentComp).setVisible(true);
+			dialog = ((JDialog) dialogContentComp);
+		} else {
+			dialog = new JDialog(_instance, dialogContentComp.getName(), true);
+			dialog.add(dialogContentComp);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		}
 
-		JDialog dialog = new JDialog(_instance, dialogContentComp.getName(), true);
-		dialog.add(dialogContentComp);
-		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		if (dialog != null) {
+			dialog.pack();
+			dialog.setBounds(parentBounds.x + parentBounds.width / 2 - preferredSize.width / 2,
+					parentBounds.y + parentBounds.height / 2 - preferredSize.height / 2, preferredSize.width,
+					preferredSize.height);
 
-		dialog.setVisible(true);
+			dialog.setVisible(true);
+		}
 	}
 
 	/*
 	 * 用户点击菜单项
 	 * 
-	 * @see
-	 * org.gridsofts.guif.itf.IMenuListener#menuItemClicked(org.gridsofts.guif.
+	 * @see org.gridsofts.guif.itf.IMenuListener#menuItemClicked(org.gridsofts.guif.
 	 * event.EventObject)
 	 */
 	@Override

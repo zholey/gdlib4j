@@ -6,6 +6,7 @@
 package org.gridsofts.swing.tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JTree;
@@ -17,8 +18,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.gridsofts.event.EventDispatcher;
 import org.gridsofts.event.Event;
+import org.gridsofts.event.EventDispatcher;
 import org.gridsofts.swing.treeClasses.ITreeListener;
 import org.gridsofts.swing.treeClasses.ITreeNode;
 import org.gridsofts.swing.treeClasses.TreeEvent;
@@ -149,10 +150,8 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	 * 如果当前选定了一个节点，则新节点是当前选定节点的子节点，如果当前未选定任何节点，则新节点是根节点的子节点
 	 * 
 	 * @param newObj
-	 * @param expandNow
-	 *            是否立即展开
-	 * @param selectNow
-	 *            是否立即选定
+	 * @param expandNow 是否立即展开
+	 * @param selectNow 是否立即选定
 	 */
 	public void addTreeNode(ITreeNode newObj, boolean expandNow, boolean selectNow) {
 
@@ -224,25 +223,41 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 	 * 展开所有节点
 	 */
 	public void expandAll() {
-
-		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getModel().getRoot();
-		List<TreeNode> leafNodes = getAllLeafNodes(rootNode, null);
-
-		for (TreeNode node : leafNodes) {
-			expandPath(getNodeTreePath(node, null, false));
-		}
+		setTreePathExpandedState((DefaultMutableTreeNode) getModel().getRoot(), null, true);
 	}
 
 	/**
 	 * 关闭所有节点
 	 */
 	public void collapseAll() {
+		setTreePathExpandedState((DefaultMutableTreeNode) getModel().getRoot(), null, false);
+	}
 
-		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getModel().getRoot();
-		List<TreeNode> leafNodes = getAllLeafNodes(rootNode, null);
+	/**
+	 * 展开/关闭节点及其所有子节点
+	 * 
+	 * @param node
+	 * @param path
+	 * @param state true - expand; false - collapse
+	 * @return
+	 */
+	protected void setTreePathExpandedState(TreeNode node, TreeNode[] parentPathNodes, boolean state) {
 
-		for (TreeNode node : leafNodes) {
-			collapsePath(getNodeTreePath(node, null, false));
+		List<TreeNode> pathNodes = new ArrayList<>();
+		if (parentPathNodes != null) {
+			pathNodes.addAll(Arrays.asList(parentPathNodes));
+		}
+		
+		if (!node.isLeaf()) {
+			pathNodes.add(node);
+		}
+
+		for (int i = 0; i < node.getChildCount(); i++) {
+			setTreePathExpandedState(node.getChildAt(i), pathNodes.toArray(new TreeNode[0]), state);
+		}
+
+		if (rootVisible || pathNodes.size() > 1) {
+			setExpandedState(new TreePath(pathNodes.toArray(new TreeNode[0])), state);
 		}
 	}
 
@@ -258,7 +273,7 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 
 		if (root.getChildren() != null && root.getChildren().size() > 0) {
 			List<?> children = root.getChildren();
-			
+
 			for (int i = 0; i < children.size(); i++) {
 				treeNode.add(recursionBuildMutableTreeNode((ITreeNode) children.get(i)));
 			}
@@ -316,7 +331,7 @@ public abstract class AbstractTree extends JTree implements TreeSelectionListene
 		if (!pathObjs.isEmpty()) {
 			return new TreePath(pathObjs.toArray(new TreeNode[0]));
 		}
-		
+
 		return null;
 	}
 

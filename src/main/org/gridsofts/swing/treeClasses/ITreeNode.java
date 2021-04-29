@@ -14,11 +14,8 @@ import java.util.List;
  */
 public interface ITreeNode {
 	
-	/**
-	 * 设置节点名称
-	 * 
-	 * @return
-	 */
+	public String getName();
+	
 	public void setName(String name);
 
 	public void add(ITreeNode child);
