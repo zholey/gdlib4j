@@ -226,4 +226,8 @@ public class StringUtil {
 
 		return strBuf.toString();
 	}
+	
+	public static String trim(String str) {
+		return str == null ? null : str.trim();
+	}
 }

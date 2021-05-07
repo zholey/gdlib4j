@@ -244,12 +244,13 @@ public class Application extends JFrame implements IMenuListener {
 		if (JDialog.class.isAssignableFrom(dialogContentComp.getClass())) {
 			dialog = ((JDialog) dialogContentComp);
 		} else {
-			dialog = new JDialog(_instance, dialogContentComp.getName(), true);
+			dialog = new JDialog(_instance, dialogContentComp.getName());
 			dialog.add(dialogContentComp);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		}
 
 		if (dialog != null) {
+			dialog.setModal(true);
 			dialog.pack();
 			dialog.setBounds(parentBounds.x + parentBounds.width / 2 - preferredSize.width / 2,
 					parentBounds.y + parentBounds.height / 2 - preferredSize.height / 2, preferredSize.width,
