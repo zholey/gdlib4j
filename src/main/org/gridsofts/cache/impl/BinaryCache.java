@@ -64,8 +64,16 @@ public class BinaryCache implements ICache {
 
 	public BinaryCache() {
 	}
-
+	
 	public void connect() {
+		connect(false);
+	}
+
+	public void connect(boolean force) {
+		
+		if (force) {
+			disconnect();
+		}
 
 		if (jedisPool == null && !StringUtil.isNull(redisHost) && redisPort > 0) {
 			JedisPoolConfig config = new JedisPoolConfig();
