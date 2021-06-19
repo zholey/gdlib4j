@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -278,6 +279,60 @@ public class BeanUtil {
 	 */
 	public static <T> T copyProperties(T fromBean, T toBean, String[] ignoreFields) {
 		return copyProperties(fromBean, toBean, ignoreFields, null);
+	}
+
+	/**
+	 * 拷贝部分属性
+	 * 
+	 * @param <T>
+	 * @param fromBean
+	 * @param toBean
+	 * @param ignoreAnnotations
+	 */
+	public static <T> T copyProperties(T fromBean, T toBean, Annotation[] ignoreAnnotations) {
+		
+		if (fromBean == null || toBean == null) {
+			throw new NullPointerException();
+		}
+		
+		if (ignoreAnnotations == null) {
+			return copyProperties(fromBean, toBean);
+		}
+		
+		// 需要忽略的注解列表
+		final List<Annotation> ignoreAnnotationList = Arrays.asList(ignoreAnnotations);
+
+		// 找出所有需要忽略的属性名称
+		List<String> ignoreFieldNames = new ArrayList<>();
+		Field[] fields = toBean.getClass().getDeclaredFields();
+
+		if (fields == null || fields.length == 0) {
+			return toBean;
+		}
+
+		// 为bean的各字段赋值
+		fieldLoop: for (int i = 0, fieldCount = fields.length; i < fieldCount; i++) {
+			Field toFld = fields[i];
+
+			// 跳过静态、常量字段
+			if (isConstField(toFld)) {
+				continue fieldLoop;
+			}
+
+			String fieldName = toFld.getName();
+
+			// 忽略的字段
+			Annotation[] fldAnnotations = toFld.getAnnotations();
+			if (fldAnnotations != null && fldAnnotations.length > 0) {
+				Arrays.stream(fldAnnotations).filter(annotation -> {
+					return ignoreAnnotationList.contains(annotation);
+				}).findAny().ifPresent(annotaion -> {
+					ignoreFieldNames.add(fieldName);
+				});
+			}
+		}
+		
+		return copyProperties(fromBean, toBean, ignoreFieldNames.toArray(new String[0]));
 	}
 
 	/**
