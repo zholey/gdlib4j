@@ -13,51 +13,43 @@ package org.gridsofts.util;
 public class LatitudeUtil {
 	public static final double EARTH_RADIUS = 6371004.0D;
 
-	private static double rad(double d) {
-		return d * 3.141592653589793D / 180.0D;
-	}
-
 	/**
-	 * 计算两个经纬度间的距离；（单位：可能是米）
+	 * 计算两个经纬度的近似距离；（单位：米）
 	 * 
-	 * @param lon1
-	 * @param lat1
-	 * @param lon2
-	 * @param lat2
+	 * @param lon1 第一点的经度
+	 * @param lat1 第一点的纬度
+	 * @param lon2 第二点的经度
+	 * @param lat2 第二点的纬度
 	 * @return
 	 */
 	public static double distance(double lon1, double lat1, double lon2, double lat2) {
+		return distance(lon1, lat1, lon2, lat2, EARTH_RADIUS);
+	}
 
-		double radLat1 = rad(lat1);
-		double radLat2 = rad(lat2);
+	/**
+	 * 计算两个经纬度的近似距离；（单位：米）
+	 * 
+	 * @param lon1        第一点的经度
+	 * @param lat1        第一点的纬度
+	 * @param lon2        第二点的经度
+	 * @param lat2        第二点的纬度
+	 * @param earthRadius 地球半径
+	 * @return
+	 */
+	public static double distance(double lon1, double lat1, double lon2, double lat2, double earthRadius) {
+
+		double radLat1 = Math.toRadians(lat1);
+		double radLat2 = Math.toRadians(lat2);
+
+		double radLon1 = Math.toRadians(lon1);
+		double radLon2 = Math.toRadians(lon2);
 
 		double a = radLat1 - radLat2;
-		double b = rad(lon1) - rad(lon2);
+		double b = radLon1 - radLon2;
 
 		double c = 2.0D * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2.0D), 2.0D)
 				+ Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2.0D), 2.0D)));
 
-		return c * 6371004.0D;
+		return c * earthRadius;
 	}
-
-	// public static double area() {
-	//
-	// iArea = iArea + (vecPoly[iCycle].x * vecPoly[(iCycle+1) % iCount].y -
-	// vecPoly[(iCycle+1) % iCount].x * vecPoly[iCycle].y);
-	// int intAreaCalc(vector<myPoint> &vecPoly)
-	// {
-	// int iCycle,iCount,iArea;
-	// iCycle=0;
-	// iArea=0;
-	// iCount=vecPoly.size();
-	//
-	// for(iCycle=0;iCycle<iCount;iCycle++)
-	// {
-	// iArea=iArea+(vecPoly[iCycle].x*vecPoly[(iCycle+1) %
-	// iCount].y-vecPoly[(iCycle+1) % iCount].x*vecPoly[iCycle].y);
-	// }
-	//
-	// return abs(0.5*iArea);
-	// }
-	// }
 }

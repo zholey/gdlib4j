@@ -6,6 +6,8 @@
 package org.gridsofts.util;
 
 /**
+ * GIS坐标投影转换工具
+ * 
  * @author lei
  */
 public class GPSConvertUtil {
